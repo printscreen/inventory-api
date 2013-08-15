@@ -1,8 +1,11 @@
 <?php
-class Admin_Form_User extends Inventory_Form
+class Admin_Form_Customer extends Inventory_Form
 {
-    public function __construct($options = null)
+    private $_requesterUserId;
+    
+    public function __construct($requesterUserId, $requireLocationId, $options = null)
     {
+        $this->_requesterUserId = $requesterUserId;
         parent::__construct($options);
         $userId = new Zend_Form_Element_Hidden('userId');
         $userId->setRequired(false)
@@ -10,8 +13,17 @@ class Admin_Form_User extends Inventory_Form
               ->addFilter('StringTrim')
               ->addValidator('NotEmpty',true)
               ->addValidator('Digits')
-              ->addErrorMessage('Not a valid location id');
+              ->addValidator(new Inventory_Validate_EditUser('userId', $this->_requesterUserId));
         $this->addElement($userId);
+        
+        $locations = new Inventory_Form_Element_LocationSelect('locationId');        
+        $locations->setRequired($requireLocationId)
+             ->setRequesterUserId($this->_requesterUserId)
+             ->addFilter('StripTags')
+          	 ->addFilter('StringTrim')
+          	 ->addErrorMessage('Please select a default location')
+             ->addValidator('Digits');
+        $this->addElement($locations);
 
         $firstName = new Zend_Form_Element_Text('firstName');
     	$firstName->setRequired(true)
@@ -40,7 +52,7 @@ class Admin_Form_User extends Inventory_Form
   			   ->addValidator(new Inventory_Validate_EmailDuplicate('email'), true)
   			   ->setAttrib('placeholder', 'Email');
         $this->addElement($email);
-
+        
         $active = new Zend_Form_Element_Select('active');
         $active->setRequired(true)
                  ->addFilter('StripTags')

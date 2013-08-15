@@ -61,7 +61,7 @@ class Model_UserLocations extends Model_Base_Db
 		return $this->_userLocations;
 	}
 	
-	public function setUserLocations($locationsIds)
+	public function setUserLocations($locationIds)
 	{
 	    if(!is_array($locationIds) || !is_numeric($this->_userId)) {
 	        throw new Zend_Exception('Invalid Parameters');
