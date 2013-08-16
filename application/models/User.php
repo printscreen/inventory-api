@@ -216,7 +216,19 @@ class Model_User extends Model_Base_Db
 	
 	public function canEditUser($userToEditUserId)
 	{
+	    // Case 1: Employees can not access other employees
+	    // Case 2: If user shares a location
+	    // Case 3: If the user is an admin
+	    
 	    $sql = 'SELECT COALESCE(
+	    	(
+	    	 SELECT false
+	    	 FROM users u
+	    	 INNER JOIN users uu USING(user_type_id)
+	    	 WHERE u.user_id = :userId
+	    	 AND uu.user_id = :userToEditUserId
+	    	 AND u.user_type_id != 1
+	    	),
 	    	(
 	    	 SELECT true 
 	    	 FROM user_location ul 

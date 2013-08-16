@@ -3,13 +3,20 @@ class Admin_UserController extends Inventory_Controller_Action
 {
     public function getUserAction()
     {
-        $user = new Model_User(array(
-            'userId' => $this->getRequest()->getParam('userId')
-        ));
-        $user->load();
+        $success = false;
+        $form = new Form_AccessUser($this->getRequesterUserId());
+        if($form->isValid($this->getRequest()->getParams())) {
+            $getUser = new Model_User(array(
+            	'userId' => $this->getRequest()->getParam('userId')
+            ));
+            $getUser->load();
+            $user = $getUser->toArray();
+            $success = true;  
+        }
         $this->_helper->json(array(
-            'success' => true,
-            'user' => $user->toArray() 
+            'success' => $success,
+            'user' => $user,
+            'errors' => $user 
         ));
     }
     
@@ -32,8 +39,8 @@ class Admin_UserController extends Inventory_Controller_Action
     public function viewCustomerAction()
     {
         $users = new Model_Users();
-        $users->getUserByType(
-            Model_User::USER_TYPE_CUSTOMER
+        $users->getCustomers(
+            $this->getRequesterUserId()
           , $this->getRequest()->getParam('active', true)
           , $this->getRequest()->getParam('sort')
           , $this->getRequest()->getParam('offset')
@@ -113,36 +120,41 @@ class Admin_UserController extends Inventory_Controller_Action
         ));
     }
     
-    public function viewUserLocationsAction()
+    public function viewUserLocationAction()
     {
-        $userLocations = new Model_UserLocations(array(
-        	'userId' => $this->getRequest()->getParam('userId')
-        ));
-        $userLocations->getUserLocations();
+        $success = false;
+        $form = new Form_AccessUser($this->getRequesterUserId());
+        if($form->isValid($this->getRequest()->getParams())) {
+            $getUserLocations = new Model_UserLocations(array(
+            	'userId' => $this->getRequest()->getParam('userId')
+            ));
+            $getUserLocations->getUserLocations();
+            $userLocations = $getUserLocations->toArray();
+            $success = true;  
+        }
         $this->_helper->json(array(
-            'success' => true,
-            'userLocations' => $userLocations->toArray()
+            'success' => $success,
+            'userLocations' => $userLocations,
+            'errors' => $form->getFormErrors() 
         ));
     }
     
-    public function editUserLocationsAction()
+    public function editUserLocationAction()
     {
         $success = false;
-        $error = array();
-        $locations = $this->getRequest()->getParam('locationId', array());
-        if(!is_array($locations) || count($locations) < 1) {
-            $error[] = 'You must have at least one location';
-        }
-        if(empty($error)) {
+        $form = new Form_UserLocation($this->getRequesterUserId());
+        if($form->isValid($this->getRequest()->getParams())) {
             $userLocations = new Model_UserLocations(array(
-            	'userId'=>$this->getRequest()->getParam('userId')
+            	'userId' => $form->getElement('userId')->getValue()
             ));
-            $userLocations->setUserLocations($locations);
+            $userLocations->setUserLocations(
+                $form->getElement('locationId')->getValue()
+            );
             $success = true;
         }
         $this->_helper->json(array(
             'success' => $success,
-            'errors' => $error
+            'errors' => $form->getFormErrors()
         ));
     }
 }

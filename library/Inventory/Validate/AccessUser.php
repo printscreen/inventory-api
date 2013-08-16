@@ -1,12 +1,12 @@
 <?php 
-class Inventory_Validate_EditUser extends Zend_Validate_Abstract
+class Inventory_Validate_AccessUser extends Zend_Validate_Abstract
 {   
 	const CANT_EDIT = 'cantedit';
 	protected $_token;
 	protected $_userId;
 	
 	protected $_messageTemplates = array(
-    	self::CANT_EDIT => "You do not have permission to edit this user"
+    	self::CANT_EDIT => "You do not have permission to access this user"
     );
     
 	public function __construct($token, $userId)
@@ -18,13 +18,12 @@ class Inventory_Validate_EditUser extends Zend_Validate_Abstract
     public function isValid($value, $context = null)
     {
         $this->_setValue($value);
-        $userToEditId = isset($context[$this->_token]) ? $context[$this->_token] : null;
-    	if(empty($userToEditId) || !is_numeric($userToEditId)) {
-    	    return false;
-    	}
+        if(empty($value)) {
+            return true;
+        }
     	
     	$user = new Model_User(array('userId'=>$this->_userId)); 	
-    	if(!$user->canEditUser($userToEditId)) {
+    	if(!$user->canEditUser($value)) {
 
     	    $this->_error(self::CANT_EDIT);
             return false;

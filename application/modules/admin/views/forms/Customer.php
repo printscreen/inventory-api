@@ -13,16 +13,17 @@ class Admin_Form_Customer extends Inventory_Form
               ->addFilter('StringTrim')
               ->addValidator('NotEmpty',true)
               ->addValidator('Digits')
-              ->addValidator(new Inventory_Validate_EditUser('userId', $this->_requesterUserId));
+              ->addValidator(new Inventory_Validate_AccessUser('userId', $requesterUserId));
         $this->addElement($userId);
         
         $locations = new Inventory_Form_Element_LocationSelect('locationId');        
         $locations->setRequired($requireLocationId)
-             ->setRequesterUserId($this->_requesterUserId)
+             ->setRequesterUserId($requesterUserId)
              ->addFilter('StripTags')
           	 ->addFilter('StringTrim')
           	 ->addErrorMessage('Please select a default location')
-             ->addValidator('Digits');
+             ->addValidator('Digits')
+             ->addValidator(new Inventory_Validate_AccessLocation('locationId', $requesterUserId));
         $this->addElement($locations);
 
         $firstName = new Zend_Form_Element_Text('firstName');

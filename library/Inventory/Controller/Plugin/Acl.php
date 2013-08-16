@@ -64,29 +64,5 @@ class Inventory_Controller_Plugin_Acl extends Zend_Controller_Plugin_Abstract
 				throw new Inventory_Acl_Exception('Resource Denied');
 			}
 		}
-
-		//Check if the user can access the user passed
-		if($this->getRequest()->getParam('userId')) {
-		    $canEditUser = new Model_User(array(
-		    	'userId'=>$token->getUserId()
-		    ));
-		    if(!$canEditUser->canEditUser($this->getRequest()->getParam('userId'))) {
-		        throw new Inventory_Acl_Exception('Invalid user id. Permission denied');
-		    }
-		}
-		
-		//Check if the user can access a locationId passed
-		if($this->getRequest()->getParam('locationId')) {
-		    //If passing a single id, convert to array for lookup
-		    $locationIds = is_array($this->getRequest()->getParam('locationId')) ?
-		        $this->getRequest()->getParam('locationId') :
-		        array($this->getRequest()->getParam('locationId'));
-		    $canUserEditLocations = new Model_UserLocation(array(
-		    	'userId' => $token->getUserId()
-		    ));
-            if(!$canUserEditLocations->canEditLocations($locations)) {
-                throw new Inventory_Acl_Exception('Invalid location id. Permission denied');
-            }
-		}
 	}
 }
