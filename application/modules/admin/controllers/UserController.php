@@ -54,7 +54,7 @@ class Admin_UserController extends Inventory_Controller_Action
     
     public function editEmployeeAction()
     {
-        $form = new Admin_Form_User();
+        $form = new Admin_Form_User($this->getRequesterUserId());
         $success = false;
         $errors = array();
         if ($form->isValid($this->getRequest()->getParams())) {     
