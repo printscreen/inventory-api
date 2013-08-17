@@ -9,9 +9,8 @@ class Inventory_Validate_AccessUnit extends Zend_Validate_Abstract
     	self::CANT_EDIT => "You do not have permission to access this unit"
     );
     
-	public function __construct($token, $userId)
+	public function __construct($userId)
     {
-        $this->_token = $token;
         $this->_userId = $userId;
     }
     

@@ -11,7 +11,7 @@ class Form_AccessLocation extends Inventory_Form
               ->setIsArray(true)
               ->addValidator('NotEmpty',true)
               ->addValidator('Digits')
-              ->addValidator(new Inventory_Validate_AccessLocation(null, $requesterUserId));
+              ->addValidator(new Inventory_Validate_AccessLocation($requesterUserId));
         $this->addElement($locationId);
     }
 }

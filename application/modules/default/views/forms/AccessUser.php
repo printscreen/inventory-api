@@ -10,7 +10,7 @@ class Form_AccessUser extends Inventory_Form
               ->addFilter('StringTrim')
               ->addValidator('NotEmpty',true)
               ->addValidator('Digits')
-              ->addValidator(new Inventory_Validate_AccessUser('userId', $requesterUserId));
+              ->addValidator(new Inventory_Validate_AccessUser($requesterUserId));
         $this->addElement($userId);
     }
 }

@@ -10,7 +10,7 @@ class Form_UserLocation extends Inventory_Form
               ->addFilter('StringTrim')
               ->addValidator('NotEmpty',true)
               ->addValidator('Digits')
-              ->addValidator(new Inventory_Validate_AccessUser('userId', $requesterUserId));
+              ->addValidator(new Inventory_Validate_AccessUser($requesterUserId));
         $this->addElement($userId);
         
         
@@ -21,7 +21,7 @@ class Form_UserLocation extends Inventory_Form
               ->setIsArray(true)
               ->addValidator('Digits')
               ->addValidator('NotEmpty',true)
-              ->addValidator(new Inventory_Validate_AccessLocation(null, $requesterUserId));
+              ->addValidator(new Inventory_Validate_AccessLocation($requesterUserId));
         $this->addElement($locationId);
     }
 }

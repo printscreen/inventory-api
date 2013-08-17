@@ -10,7 +10,7 @@ class Form_AccessUnit extends Inventory_Form
               ->addFilter('StringTrim')
               ->addValidator('NotEmpty',true)
               ->addValidator('Digits')
-              ->addValidator(new Inventory_Validate_AccessUnit(null, $requesterUserId));
+              ->addValidator(new Inventory_Validate_AccessUnit($requesterUserId));
         $this->addElement($unitId);
     }
 }
