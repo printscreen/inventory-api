@@ -71,14 +71,16 @@ class Model_UserLocation extends Model_Base_Db
 	    	 		FROM user_location
 	    	 		WHERE user_id = :userId
 	    	 	)x 
-	    	 	WHERE x.location_id NOT IN ('.$this->arrayToIn($locationIds).')
+	    	 	WHERE x.location_id NOT IN ('.$this->arrayToIn($locationIds).') LIMIT 1
 	    	),
 	    	(
 	    	 SELECT CASE WHEN user_type_id = 1 THEN true END FROM users WHERE user_id = :userId
 	    	),
 	    	false
 	    ) AS "can_edit"';
+	    
 	    $userId = $this->convertToInt($this->_userId);
+
 	    $userToEditUserId = $this->convertToInt($userToEditUserId);
 	    $query = $this->_db->prepare($sql);
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);

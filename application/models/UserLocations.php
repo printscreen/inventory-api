@@ -61,19 +61,13 @@ class Model_UserLocations extends Model_Base_Db
 		return $this->_userLocations;
 	}
 	
-	public function setUserLocations($locationIds)
+	public function addUserLocations($locationIds)
 	{
 	    if(!is_array($locationIds) || !is_numeric($this->_userId)) {
 	        throw new Zend_Exception('Invalid Parameters');
 	    }
 	    $userId = $this->convertToInt($this->_userId);
-
-	    $sql = 'DELETE FROM user_location WHERE user_id = :userId';
-	    $query = $this->_db->prepare($sql);
-	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
-	    $query->execute();
-
-	    $sql = 'INSERT INTO user_location (user_id, location_id) VALUES (:userId, :locationId)';
+	    $sql = 'INSERT IGNORE INTO user_location SET user_id = :userId, location_id = :locationId';
 	    $query = $this->_db->prepare($sql);
 	    foreach($locationIds as $locationId) {
 	        $locationId = $this->convertToInt($locationId);
@@ -81,7 +75,24 @@ class Model_UserLocations extends Model_Base_Db
 	        $query->bindParam(':locationId', $locationId, PDO::PARAM_INT);
 	        $query->execute();
 	    }
-	    return true;
+	    return $this;
+	}
+	
+	public function deleteUserLocations($locationIds)
+	{
+	    if(!is_array($locationIds) || !is_numeric($this->_userId)) {
+	        throw new Zend_Exception('Invalid Parameters');
+	    }
+	    $userId = $this->convertToInt($this->_userId);
+
+	    $sql = 'DELETE FROM user_location WHERE user_id = :userId AND location_id IN ('.$this->arrayToIn($locationIds).')';
+	    $query = $this->_db->prepare($sql);
+	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
+	    foreach($locationIds as $locationId) {
+	        $query->bindParam(':'.$locationId, $locationId, PDO::PARAM_INT);
+	    }
+	    $query->execute();
+        return $this;
 	}
 	
 	public function toArray()

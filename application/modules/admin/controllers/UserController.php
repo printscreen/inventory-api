@@ -139,7 +139,7 @@ class Admin_UserController extends Inventory_Controller_Action
         ));
     }
     
-    public function editUserLocationAction()
+    public function addUserLocationAction()
     {
         $success = false;
         $form = new Form_UserLocation($this->getRequesterUserId());
@@ -147,7 +147,30 @@ class Admin_UserController extends Inventory_Controller_Action
             $userLocations = new Model_UserLocations(array(
             	'userId' => $form->getElement('userId')->getValue()
             ));
-            $userLocations->setUserLocations(
+            $userLocations->addUserLocations(
+                !is_array($form->getElement('locationId')->getValue()) ?
+                array($form->getElement('locationId')->getValue()) :
+                $form->getElement('locationId')->getValue()
+            );
+            $success = true;
+        }
+        $this->_helper->json(array(
+            'success' => $success,
+            'errors' => $form->getFormErrors()
+        ));
+    }
+    
+    public function deleteUserLocationAction()
+    {
+        $success = false;
+        $form = new Form_UserLocation($this->getRequesterUserId());
+        if($form->isValid($this->getRequest()->getParams())) {
+            $userLocations = new Model_UserLocations(array(
+            	'userId' => $form->getElement('userId')->getValue()
+            ));
+            $userLocations->deleteUserLocations(
+                !is_array($form->getElement('locationId')->getValue()) ?
+                array($form->getElement('locationId')->getValue()) :
                 $form->getElement('locationId')->getValue()
             );
             $success = true;
