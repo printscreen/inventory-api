@@ -20,7 +20,7 @@ class Model_Units extends Model_Base_Db
 		$this->_units = array();
 	}
 
-	public function getUnitsByLocationId($sort = null, $offset = null, $limit = null)
+	public function getUnitsByLocationId($active = true, $sort = null, $offset = null, $limit = null)
 	{
 		if(empty($this->_locationId) || !is_numeric($this->_locationId)) {
 		    throw new Zend_Exception('No location id supplied');
@@ -39,6 +39,7 @@ class Model_Units extends Model_Base_Db
 			  	 ) AS total
 			FROM unit
 			WHERE location_id = :locationId
+			AND active = :active
 			ORDER BY :sort
 			LIMIT :offset,:limit
  		";
@@ -50,6 +51,7 @@ class Model_Units extends Model_Base_Db
 	    $locationId = $this->convertToInt($this->_locationId);
 	    
 	    $query->bindParam(':locationId', $locationId, PDO::PARAM_INT);
+	    $query->bindParam(':active', $active, PDO::PARAM_BOOL);
 	    $query->bindParam(':sort', $sort, PDO::PARAM_INT);
 	    $query->bindParam(':offset', $offset, PDO::PARAM_INT);
 	    $query->bindParam(':limit', $limit, PDO::PARAM_INT);
@@ -68,7 +70,7 @@ class Model_Units extends Model_Base_Db
 		return $this->_units;
 	}
 	
-    public function getUnitsByUserId($sort = null, $offset = null, $limit = null)
+    public function getUnitsByUserId($active = true, $sort = null, $offset = null, $limit = null)
 	{
 		if(empty($this->_userId) || !is_numeric($this->_userId)) {
 		    throw new Zend_Exception('No user id supplied');
@@ -86,6 +88,7 @@ class Model_Units extends Model_Base_Db
 			FROM unit u
 			INNER JOIN user_location ul ON u.location_id = ul.location_id
 			WHERE ul.user_id = :userId
+			AND active = :active
 			".(is_numeric($this->_locationId) ? ' AND u.location_id = :locationId ' : '')."
 			UNION
 			SELECT
@@ -94,7 +97,8 @@ class Model_Units extends Model_Base_Db
 			  ,	uu.location_id
 			  , uu.active
 			FROM unit uu
-			WHERE (SELECT user_type_id FROM users WHERE user_id = :userId) = 1
+			WHERE active = :active
+			AND (SELECT user_type_id FROM users WHERE user_id = :userId) = 1
 			". (is_numeric($this->_locationId) ? ' AND uu.location_id = :locationId ' : '') ."
 			)x
 			ORDER BY :sort
@@ -109,6 +113,7 @@ class Model_Units extends Model_Base_Db
 	    $userId = $this->convertToInt($this->_userId);
 	    
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
+	    $query->bindParam(':active', $active, PDO::PARAM_BOOL);
 	    $query->bindParam(':sort', $sort, PDO::PARAM_INT);
 	    $query->bindParam(':offset', $offset, PDO::PARAM_INT);
 	    $query->bindParam(':limit', $limit, PDO::PARAM_INT);

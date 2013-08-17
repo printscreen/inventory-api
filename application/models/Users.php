@@ -30,7 +30,8 @@ class Model_Users extends Model_Base_Db
 			  	  WHERE user_type_id = :userTypeId
 			  	) AS total
 			FROM users
-			WHERE user_type_id = :userTypeId AND :active
+			WHERE user_type_id = :userTypeId 
+			AND active = :active
 			ORDER BY :sort
 			LIMIT :offset,:limit
  		";

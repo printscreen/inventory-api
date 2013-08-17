@@ -30,7 +30,8 @@ class Admin_UnitController extends Inventory_Controller_Action
                 'locationId' => $form->getElement('locationId')->getValue()
             ));
             $getUnits->getUnitsByLocationId(
-                $this->getRequest()->getParam('sort')
+                $this->getRequest()->getParam('active', true)
+              , $this->getRequest()->getParam('sort')
               , $this->getRequest()->getParam('offset')
               , $this->getRequest()->getParam('limit')
             );
@@ -54,7 +55,8 @@ class Admin_UnitController extends Inventory_Controller_Action
                 'userId' => $form->getElement('userId')->getValue()
             ));
             $getUnits->getUnitsByUserId(
-                $this->getRequest()->getParam('sort')
+                $this->getRequest()->getParam('active', true)
+              , $this->getRequest()->getParam('sort')
               , $this->getRequest()->getParam('offset')
               , $this->getRequest()->getParam('limit')
             );
