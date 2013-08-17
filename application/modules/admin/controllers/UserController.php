@@ -1,7 +1,7 @@
 <?php
 class Admin_UserController extends Inventory_Controller_Action
 {
-    public function getUserAction()
+    public function getAction()
     {
         $success = false;
         $form = new Form_AccessUser($this->getRequesterUserId());

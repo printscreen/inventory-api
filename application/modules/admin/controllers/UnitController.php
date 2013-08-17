@@ -1,7 +1,7 @@
 <?php
 class Admin_UnitController extends Inventory_Controller_Action
 {
-    public function getUnitAction()
+    public function getAction()
     {
         $success = false;
         $form = new Form_AccessUnit($this->getRequesterUserId());
