@@ -16,7 +16,7 @@ class Admin_UserController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => $success,
             'user' => $user,
-            'errors' => $user 
+            'errors' => $form->getFormErrors() 
         ));
     }
     
