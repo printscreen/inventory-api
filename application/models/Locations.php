@@ -31,7 +31,7 @@ class Model_Locations extends Model_Base_Db
 			  	  FROM location 
 			  	) AS total
 			FROM location
-			WHERE :active
+			WHERE active = :active
 			ORDER BY :sort
 			LIMIT :offset,:limit
  		";
@@ -58,5 +58,16 @@ class Model_Locations extends Model_Base_Db
 			}
 		}
 		return $this->_locations;
+	}
+	
+	public function toArray()
+	{
+	    $locations = array();
+	    if(is_array($this->_locations) && count($this->_locations) > 0) {
+	        foreach($this->_locations as $location) {
+	            $locations[] = $location->toArray();
+	        }
+	    }
+	    return $locations;
 	}
 }
