@@ -56,7 +56,6 @@ class Admin_UserController extends Inventory_Controller_Action
     {
         $form = new Admin_Form_User($this->getRequesterUserId());
         $success = false;
-        $errors = array();
         if ($form->isValid($this->getRequest()->getParams())) {     
             $user = new Model_User(array(
                 'userId' => $form->getElement('userId')->getValue()
@@ -89,7 +88,6 @@ class Admin_UserController extends Inventory_Controller_Action
             !is_numeric($this->getRequest()->getParam('userId'))
         );
         $success = false;
-        $errors = array();
         if ($form->isValid($this->getRequest()->getParams())) {     
             $user = new Model_User(array(
                 'userId' => $form->getElement('userId')->getValue()
