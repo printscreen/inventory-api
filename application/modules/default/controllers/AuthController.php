@@ -19,12 +19,13 @@ class AuthController extends Zend_Controller_Action
 			$result = $auth->authenticate($authAdapter);
             if($result->isValid()) {
                 $success = true;
-                $user = new Model_User();
-            	$user->setEmail($form->getElement('email')->getValue());
-            	$user->load();
-
+                $getUser = new Model_User();
+            	$getUser->setEmail($form->getElement('email')->getValue());
+            	$getUser->load();
+                $user = $getUser->toArray();
+            	
             	$getToken = new Model_Token(array(
-            	    'userId' => $user->getUserId()
+            	    'userId' => $getUser->getUserId()
             	));
             	$token = $getToken->generate();
             } else {
@@ -34,6 +35,7 @@ class AuthController extends Zend_Controller_Action
         $this->_helper->json(array(
         	'success' => $success,
             'token' => $token,
+            'user' => $user,
             'message' => $message,
             'errors' => $form->getFormErrors() 
         ));
