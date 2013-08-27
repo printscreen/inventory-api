@@ -17,7 +17,7 @@ class Admin_UnitController extends Inventory_Controller_Action
             'success' => $success,
             'unit' => $unit,
             'errors' => $form->getFormErrors()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function viewUnitByLocationAction()
@@ -42,7 +42,7 @@ class Admin_UnitController extends Inventory_Controller_Action
             'success' => $success,
             'units' => $units,
             'errors' => $form->getFormErrors()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function viewUnitByUserAction()
@@ -67,7 +67,7 @@ class Admin_UnitController extends Inventory_Controller_Action
             'success' => $success,
             'units' => $units,
             'errors' => $form->getFormErrors()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function editUnitAction()
@@ -93,7 +93,7 @@ class Admin_UnitController extends Inventory_Controller_Action
             'success' => true,
             'unitId' => $unitId,
             'errors' => $form->getFormErrors()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function addUnitUserAction()
@@ -111,7 +111,7 @@ class Admin_UnitController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => $success,
             'errors' => $form->getFormErrors()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function deleteUnitUserAction()
@@ -129,6 +129,6 @@ class Admin_UnitController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => $success,
             'errors' => $form->getFormErrors()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
 }

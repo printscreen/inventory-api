@@ -48,4 +48,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $frontController = Zend_Controller_Front::getInstance();
         $frontController->registerPlugin(new Inventory_Controller_Plugin_Acl());
     }
+    
+    protected function _initActionHelpers()
+    {
+        Zend_Controller_Action_HelperBroker::addHelper(
+            new Inventory_Controller_Action_Helper_Json()
+        );
+    }
 }

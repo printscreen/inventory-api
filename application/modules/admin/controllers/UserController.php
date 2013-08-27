@@ -17,7 +17,7 @@ class Admin_UserController extends Inventory_Controller_Action
             'success' => $success,
             'user' => $user,
             'errors' => $form->getFormErrors() 
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function viewEmployeeAction()
@@ -33,7 +33,7 @@ class Admin_UserController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => true,
             'users' => $users->toArray()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function viewCustomerAction()
@@ -49,7 +49,7 @@ class Admin_UserController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => true,
             'users' => $users->toArray()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function editEmployeeAction()
@@ -78,7 +78,7 @@ class Admin_UserController extends Inventory_Controller_Action
             'success' => $success,
             'userId' => $userId,
             'errors' => $form->getFormErrors()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function editCustomerAction()
@@ -115,7 +115,7 @@ class Admin_UserController extends Inventory_Controller_Action
             'success' => $success,
             'userId' => $userId,
             'errors' => $form->getFormErrors()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function viewUserLocationAction()
@@ -134,7 +134,7 @@ class Admin_UserController extends Inventory_Controller_Action
             'success' => $success,
             'userLocations' => $userLocations,
             'errors' => $form->getFormErrors() 
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function addUserLocationAction()
@@ -155,7 +155,7 @@ class Admin_UserController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => $success,
             'errors' => $form->getFormErrors()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function deleteUserLocationAction()
@@ -176,6 +176,6 @@ class Admin_UserController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => $success,
             'errors' => $form->getFormErrors()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
 }

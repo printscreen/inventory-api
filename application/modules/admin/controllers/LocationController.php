@@ -13,11 +13,12 @@ class Admin_LocationController extends Inventory_Controller_Action
             $location = $getLocation->toArray();
             $success = true;  
         }
+        
         $this->_helper->json(array(
             'success' => $success,
             'location' => $location,
             'errors' => $form->getFormErrors()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function viewAction()
@@ -30,10 +31,11 @@ class Admin_LocationController extends Inventory_Controller_Action
           , $this->getRequest()->getParam('offset')
           , $this->getRequest()->getParam('limit')
         );
-        $this->_helper->json(array(
+        $this->_helper->json(
+        array(
             'success' => true,
             'locations' => $locations->toArray()
-        ));
+        ), $this->getRequest()->getParam('callback'));
     }
     
     public function editAction()
@@ -63,6 +65,6 @@ class Admin_LocationController extends Inventory_Controller_Action
             'success' => $success,
             'locationId' => $locationId,
             'errors' => $form->getFormErrors()
-        )); 	
+        ), $this->getRequest()->getParam('callback')); 	
     }
 }
