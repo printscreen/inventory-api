@@ -123,6 +123,11 @@ class Model_Token extends Model_Base_Db
 	    }
 	    $userId = $this->convertToInt($this->_userId);
 	    
+	    $sql = 'DELETE FROM token WHERE user_id = :userId';
+	    $query = $this->_db->prepare($sql);
+	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
+	    $query->execute();
+	    
 	    $tries = 0;
 	    while($tries < TOKEN_CREATION_RETRY_COUNT) {
 	        $token = $this->_generateToken();
