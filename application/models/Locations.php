@@ -32,7 +32,7 @@ class Model_Locations extends Model_Base_Db
 			  	) AS total
 			FROM location
 			WHERE active = :active
-			ORDER BY :sort
+			ORDER BY :sort ".$this->getDirection($sort)." 
 			LIMIT :offset,:limit
  		";
 	    $query = $this->_db->prepare($sql);
@@ -40,7 +40,8 @@ class Model_Locations extends Model_Base_Db
 	    $sort = $this->getSort($sort);
 	    $offset = $this->getOffset($offset);
 	    $limit = $this->getLimit($limit);
-	    
+	    $active = $this->convertFromBoolean($active);
+
 	    $query->bindParam(':active', $active, PDO::PARAM_BOOL);
 	    $query->bindParam(':sort', $sort, PDO::PARAM_INT);
 	    $query->bindParam(':offset', $offset, PDO::PARAM_INT);
