@@ -12,11 +12,20 @@ class Model_Base_Db extends Model_Base_Base
 		}
 	}
 	
+	protected function getDirection($sort = null)
+	{
+	    if(empty($sort) || !is_numeric($sort)) {
+	        return 'ASC';
+	    } else {
+	        return intval($sort) < 0 ? 'DESC' : 'ASC';
+	    }
+	}
+	
 	protected function getSort($sort = null) {
 	    if(empty($sort) || !is_numeric($sort)) {
 	        return 1;
 	    } else {
-	        return $sort;
+	        return abs($sort);
 	    }
 	}
 	
@@ -24,7 +33,7 @@ class Model_Base_Db extends Model_Base_Base
 	    if(is_null($offset) || !is_numeric($offset)) {
 	        return 0;
 	    } else {
-	        return $offset;
+	        return intval($offset);
 	    }
 	}
 	
@@ -32,7 +41,7 @@ class Model_Base_Db extends Model_Base_Base
 	    if(empty($limit) || !is_numeric($limit)) {
 	        return PHP_INT_MAX;
 	    } else {
-	        return $limit;
+	        return intval($limit);
 	    }
 	}
 	
