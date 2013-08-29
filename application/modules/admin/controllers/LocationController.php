@@ -25,8 +25,7 @@ class Admin_LocationController extends Inventory_Controller_Action
     {
         $locations = new Model_Locations();
         $locations->getLocations(
-            Model_User::USER_TYPE_EMPLOYEE
-          , $this->getRequest()->getParam('active', true)
+            $this->getRequest()->getParam('active', true)
           , $this->getRequest()->getParam('sort')
           , $this->getRequest()->getParam('offset')
           , $this->getRequest()->getParam('limit')
