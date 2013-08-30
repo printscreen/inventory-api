@@ -40,6 +40,7 @@ class Model_Users extends Model_Base_Db
 	    $sort = $this->getSort($sort);
 	    $offset = $this->getOffset($offset);
 	    $limit = $this->getLimit($limit);
+	    $active = $this->convertFromBoolean($active);
 	    
 	    $query->bindParam(':userTypeId', $userTypeId, PDO::PARAM_INT);
 	    $query->bindParam(':active', $active, PDO::PARAM_BOOL);

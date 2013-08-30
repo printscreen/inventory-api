@@ -61,6 +61,40 @@ class Model_UserLocations extends Model_Base_Db
 		return $this->_userLocations;
 	}
 	
+    public function getAvailableUserLocations()
+	{
+		$sql = '
+				SELECT DISTINCT
+    			  	location_id
+    			  ,	name
+    			  , :userId AS user_id
+    			  , null AS user_location_id
+    			FROM
+    				location 
+    			WHERE location_id NOT IN (
+    				SELECT location_id FROM user_location WHERE user_id = :userId
+    			)
+					
+		';
+	    $query = $this->_db->prepare($sql);
+	    
+	    $userId = $this->convertToInt($this->_userId);
+	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
+		$query->execute();
+		
+		$result = $query->fetchAll();
+
+		$this->_userLocations = array();
+		if(!empty($result)) {
+			foreach($result as $key => $value) {
+				$userLocation = new Model_UserLocation();
+				$userLocation->loadRecord($value);
+				$this->_userLocations[] = $userLocation;
+			}
+		}
+		return $this->_userLocations;
+	}
+	
 	public function addUserLocations($locationIds)
 	{
 	    if(!is_array($locationIds) || !is_numeric($this->_userId)) {
