@@ -38,17 +38,34 @@ class Admin_UserController extends Inventory_Controller_Action
     
     public function viewCustomerAction()
     {
+        $form = new Form_AccessLocation($this->getRequesterUserId());
         $users = new Model_Users();
-        $users->getCustomers(
-            $this->getRequesterUserId()
-          , $this->getRequest()->getParam('active', true)
-          , $this->getRequest()->getParam('sort')
-          , $this->getRequest()->getParam('offset')
-          , $this->getRequest()->getParam('limit')
-        );
+        $success = false;
+        if($this->getRequest()->getParam('locationId')) {
+            if($form->isValid($this->getRequest()->getParams())) {
+                $users->getCustomersByLocation(
+                    $form->getElement('locationId')->getValue()
+                  , $this->getRequest()->getParam('active', true)
+                  , $this->getRequest()->getParam('sort')
+                  , $this->getRequest()->getParam('offset')
+                  , $this->getRequest()->getParam('limit')
+                );
+                $success = true;
+            }
+        } else {
+            $users->getCustomers(
+                $this->getRequesterUserId()
+              , $this->getRequest()->getParam('active', true)
+              , $this->getRequest()->getParam('sort')
+              , $this->getRequest()->getParam('offset')
+              , $this->getRequest()->getParam('limit')
+            );
+            $success = true;
+        }
         $this->_helper->json(array(
-            'success' => true,
-            'users' => $users->toArray()
+            'success' => $success,
+            'users' => $users->toArray(),
+            'errors' => $form->getFormErrors()
         ), $this->getRequest()->getParam('callback'));
     }
     
