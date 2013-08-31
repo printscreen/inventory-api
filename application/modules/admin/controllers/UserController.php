@@ -141,7 +141,7 @@ class Admin_UserController extends Inventory_Controller_Action
         $form = new Form_AccessUser($this->getRequesterUserId());
         if($form->isValid($this->getRequest()->getParams())) {
             $getUserLocations = new Model_UserLocations(array(
-            	'userId' => $this->getRequest()->getParam('userId')
+            	'userId' => $form->getElement('userId')->getValue()
             ));
             if(filter_var($this->getRequest()->getParam('available'),FILTER_VALIDATE_BOOLEAN)) {
                 $getUserLocations->getAvailableUserLocations();
