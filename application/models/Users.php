@@ -62,7 +62,7 @@ class Model_Users extends Model_Base_Db
 		return $this->_users;
 	}
 	
-	public function getCustomers($userId, $sort = null, $offset = null, $limit = null)
+	public function getCustomers($userId, $active = true, $sort = null, $offset = null, $limit = null)
 	{
 	    //Look up admin or employee
 	    $user = new Model_User(array('userId'=>$userId));
@@ -72,7 +72,7 @@ class Model_Users extends Model_Base_Db
 	    $constraint = '';
 	    //If not an admin, user can only see users of their locations
 	    if($user->getUserTypeId() != Model_User::USER_TYPE_ADMIN) {
-	        $constraint = sprintf('
+	        $constraint .= sprintf('
 	        	AND user_id IN (
 	        		SELECT u.user_id 
 	        		FROM user_location u 
@@ -80,7 +80,6 @@ class Model_Users extends Model_Base_Db
 	        		WHERE ul.user_id = %s
 	        	)', $user->getUserId());
 	    }
-	    
 	    $sql = "
 			SELECT
 			  	user_id
@@ -93,9 +92,11 @@ class Model_Users extends Model_Base_Db
 			  	    count(*) 
 			  	  FROM users
 			  	  WHERE user_type_id = 3 " . $constraint . "
+			  	  AND active = :active
 			  	) AS total
 			FROM users
 			WHERE user_type_id = 3 " . $constraint . "
+			AND active = :active
 			ORDER BY :sort
 			LIMIT :offset,:limit
  		";
@@ -105,10 +106,12 @@ class Model_Users extends Model_Base_Db
 	    $sort = $this->getSort($sort);
 	    $offset = $this->getOffset($offset);
 	    $limit = $this->getLimit($limit);
+	    $active = $this->convertFromBoolean($active);
 
 	    $query->bindParam(':sort', $sort, PDO::PARAM_INT);
 	    $query->bindParam(':offset', $offset, PDO::PARAM_INT);
 	    $query->bindParam(':limit', $limit, PDO::PARAM_INT);
+	    $query->bindParam(':active', $active, PDO::PARAM_BOOL);
 		$query->execute();
 		
 		$result = $query->fetchAll();
@@ -140,11 +143,13 @@ class Model_Users extends Model_Base_Db
 			  	  INNER JOIN user_location USING (user_id)
 			  	  WHERE location_id = :locationId
 			  	  AND active = :active
+			  	  AND user_type_id = 3
 			  	) AS total
 			FROM users
 			INNER JOIN user_location USING (user_id)
 			WHERE location_id = :locationId
 			AND active = :active
+			AND user_type_id = 3
 			ORDER BY :sort
 			LIMIT :offset,:limit
  		";
