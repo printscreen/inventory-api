@@ -3,6 +3,9 @@ class Model_UserUnit extends Model_Base_Db
 {
     protected $_userUnitId;
     protected $_userId;
+    protected $_firstName;
+    protected $_lastName;
+    protected $_email;
 	protected $_unitId;
 	protected $_active;
 	protected $_total;
@@ -25,25 +28,29 @@ class Model_UserUnit extends Model_Base_Db
 	
 	public function loadRecord($record)
 	{		
-		$this->_userId = $record->user_id;
+		$this->_userUnitId = $record->user_unit_id;
+	    $this->_userId = $record->user_id;
 		$this->_unitId = $record->unit_id;
+		$this->_firstName = $record->first_name;
+		$this->_lastName = $record->last_name;
+		$this->_email = $record->email;
 		$this->_active = $record->active;
 		$this->_total = $record->total;		
 	}
 
-	public function load($active = false)
+	public function load()
 	{
 	    $where = 'WHERE true';
 	    $binds = array();
 	    if(!empty($this->_userUnitId) && is_numeric($this->_userUnitId)) {
-			$where .= ' AND user_unit_id = :userUnitId';
+			$where .= ' AND uu.user_unit_id = :userUnitId';
 			$binds[':userUnitId'] = $this->_userUnitId;
 		} else if(is_numeric($this->_unitId) && is_numeric($this->_userId)) {
-			$where .= ' AND unit_id = :unitId AND user_id = :userId';
+			$where .= ' AND uu.unit_id = :unitId AND uu.user_id = :userId';
 			$binds[':unitId'] = $this->_unitId;
 			$binds[':userId'] = $this->_userId;
 		} else if($active && is_numeric($this->_unitId)) {
-			$where .= ' AND unit_id = :unitId AND active';
+			$where .= ' AND uu.unit_id = :unitId AND active';
 			$binds[':unitId'] = $this->_unitId;
 		} else {
 			throw new Zend_Exception("No user unit id or unit id supplied");
@@ -51,12 +58,17 @@ class Model_UserUnit extends Model_Base_Db
 	    
 	    $sql = "
 			SELECT
-			  	user_unit_id
-			  ,	user_id
-			  ,	unit_id
-			  ,	active
+			  	uu.user_unit_id
+			  ,	uu.user_id
+			  , u.first_name
+			  , u.last_name
+			  , u.email
+			  ,	uu.unit_id
+			  ,	uu.active
 			  , 1 AS total
-			FROM user_unit $where LIMIT 1
+			FROM user_unit uu
+			INNER JOIN users u ON uu.user_id = u.user_id
+			 $where LIMIT 1
  		";
         $query = $this->_db->prepare($sql);
         $query->execute($binds);
@@ -95,15 +107,29 @@ class Model_UserUnit extends Model_Base_Db
 		
 		return true;
 	}
-	
+	/**
+	 * Delete the record if there are no items associated with it, if there
+	 * are, just set active to false
+	 */
     public function delete()
 	{
-	    $userId = $this->convertToInt($this->_userId);
-	    $unitId = $this->convertToInt($this->_unitId);
-	    $sql = 'UPDATE user_unit SET active = null WHERE unit_id = :unitId AND user_id = :userId';
+	    if(!$this->load()) {
+	        throw new Zend_Exception('No user unit found to delete');
+	    }
+	    $userUnitId = $this->convertToInt($this->_userUnitId);
+	    $findSql = 'SELECT true FROM item WHERE user_unit_id = :userUnitId LIMIT 1';
+	    $query = $this->_db->prepare($findSql);
+	    $query->bindParam(':userUnitId', $userUnitId, PDO::PARAM_INT);
+	    $query->execute();
+	    $result = $query->fetchAll();
+ 
+		if(!$result || count($result) != 1) {
+			$sql = 'DELETE FROM user_unit WHERE user_unit_id = :userUnitId';
+		} else {
+		    $sql = 'UPDATE user_unit SET active = null WHERE user_unit_id = :userUnitId';
+		}
 	    $query = $this->_db->prepare($sql);
-	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
-	    $query->bindParam(':unitId', $unitId, PDO::PARAM_INT);
+	    $query->bindParam(':userUnitId', $userUnitId, PDO::PARAM_INT);
 	    $query->execute();
 		
 		return true;
@@ -118,6 +144,9 @@ class Model_UserUnit extends Model_Base_Db
 	//Getters
     public function getUserUnitId(){return $this->_userUnitId;}
 	public function getUserId(){return $this->_userId;}
+	public function getFirstName(){return $this->_firstName;}
+	public function getLastName(){return $this->_lastName;}
+	public function getEmail(){return $this->_email;}
     public function getUnitId(){return $this->_unitId;}
 	public function getActive(){return $this->_active;}
 	public function getTotal(){return $this->_total;}

@@ -90,8 +90,53 @@ class Admin_UnitController extends Inventory_Controller_Action
             $success = true;
         }
         $this->_helper->json(array(
-            'success' => true,
+            'success' => $success,
             'unitId' => $unitId,
+            'errors' => $form->getFormErrors()
+        ), $this->getRequest()->getParam('callback'));
+    }
+    
+    public function unitUsersAction()
+    {
+        $success = false;
+        $form = new Form_AccessUnit($this->getRequesterUserId());
+        if($form->isValid($this->getRequest()->getParams())) {
+            $getUsers = new Model_UserUnits(array(
+            	'unitId' => $form->getElement('unitId')->getValue()
+            ));
+            $getUsers->getUsersByUnit(
+                $this->getRequest()->getParam('sort')
+              , $this->getRequest()->getParam('offset')
+              , $this->getRequest()->getParam('limit')
+            );
+            $users = $getUsers->toArray(); 
+            $success = true;
+        }
+        $this->_helper->json(array(
+            'success' => $success,
+            'users' => $users,
+            'errors' => $form->getFormErrors()
+        ), $this->getRequest()->getParam('callback'));
+    }
+    
+    public function unitAvailableUsersAction()
+    {
+        $success = false;
+        $form = new Form_AccessUnit($this->getRequesterUserId());
+        if($form->isValid($this->getRequest()->getParams())) {
+            $getUsers = new Model_Users();
+            $getUsers->getAvailableUsersByUnit(
+                $form->getElement('unitId')->getValue()
+              , $this->getRequest()->getParam('sort')
+              , $this->getRequest()->getParam('offset')
+              , $this->getRequest()->getParam('limit')
+            );
+            $users = $getUsers->toArray(); 
+            $success = true;
+        }
+        $this->_helper->json(array(
+            'success' => $success,
+            'users' => $users,
             'errors' => $form->getFormErrors()
         ), $this->getRequest()->getParam('callback'));
     }

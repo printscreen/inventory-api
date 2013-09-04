@@ -49,6 +49,7 @@ class Model_Units extends Model_Base_Db
 	    $offset = $this->getOffset($offset);
 	    $limit = $this->getLimit($limit);
 	    $locationId = $this->convertToInt($this->_locationId);
+	    $active = $this->convertFromBoolean($active);
 	    
 	    $query->bindParam(':locationId', $locationId, PDO::PARAM_INT);
 	    $query->bindParam(':active', $active, PDO::PARAM_BOOL);

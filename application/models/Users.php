@@ -184,6 +184,71 @@ class Model_Users extends Model_Base_Db
 		return $this->_users;
 	}
 	
+    public function getAvailableUsersByUnit($unitId, $sort = null, $offset = null, $limit = null)
+	{
+	    if(empty($unitId) || !is_numeric($unitId)) {
+		    throw new Zend_Exception('No unit id supplied');
+		}
+	    $sql = "
+			SELECT
+			  	u.user_id
+			  ,	u.first_name
+			  ,	u.last_name
+			  ,	u.email
+			  ,	u.user_type_id
+			  , u.active
+			  , ( SELECT 
+			  	    count(*) 
+			  	  FROM users u
+			  	  INNER JOIN user_location ul ON u.user_id = ul.user_id
+			  	  WHERE u.user_id NOT IN (
+			  	  	  SELECT uu.user_id FROM user_unit uu WHERE uu.unit_id = :unitId
+			  	  )
+			  	  AND ul.location_id = (
+				      SELECT location_id FROM unit WHERE unit_id = :unitId
+				  )
+			  	  AND u.active
+			  	  AND u.user_type_id = 3
+			  	) AS total
+			FROM users u
+			INNER JOIN user_location ul ON u.user_id = ul.user_id
+			WHERE u.user_id NOT IN (
+				SELECT uu.user_id FROM user_unit uu WHERE uu.unit_id = :unitId
+			)
+			AND ul.location_id = (
+				SELECT location_id FROM unit WHERE unit_id = :unitId
+			)
+			AND u.active
+			AND u.user_type_id = 3
+			ORDER BY :sort
+			LIMIT :offset,:limit
+ 		";
+	    $query = $this->_db->prepare($sql);
+	    
+	    $sort = $this->getSort($sort);
+	    $offset = $this->getOffset($offset);
+	    $limit = $this->getLimit($limit);
+	    $unitId = $this->convertToInt($unitId);
+	    
+	    $query->bindParam(':unitId', $unitId, PDO::PARAM_INT);
+	    $query->bindParam(':sort', $sort, PDO::PARAM_INT);
+	    $query->bindParam(':offset', $offset, PDO::PARAM_INT);
+	    $query->bindParam(':limit', $limit, PDO::PARAM_INT);
+		$query->execute();
+		
+		$result = $query->fetchAll();
+
+		$this->_users = array();
+		if(!empty($result)) {
+			foreach($result as $key => $value) {
+				$user = new Model_User();
+				$user->loadRecord($value);
+				$this->_users[] = $user;
+			}
+		}
+		return $this->_users;
+	}
+	
 	public function toArray()
 	{
 	    $users = array();

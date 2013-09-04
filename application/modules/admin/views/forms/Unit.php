@@ -1,8 +1,6 @@
 <?php
 class Admin_Form_Unit extends Inventory_Form
-{
-    private $_userId;
-    
+{   
     public function __construct($requesterUserId, $options = null)
     {
         parent::__construct($options);
@@ -21,6 +19,7 @@ class Admin_Form_Unit extends Inventory_Form
               ->addFilter('StringTrim')
               ->addValidator('NotEmpty',true)
               ->addValidator('Digits')
+              ->addValidator(new Inventory_Validate_UnitDuplicate())
               ->addValidator(new Inventory_Validate_AccessLocation($requesterUserId));
         $this->addElement($locationId);
 

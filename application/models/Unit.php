@@ -44,11 +44,11 @@ class Model_Unit extends Model_Base_Db
 	    if(!empty($this->_unitId) && is_numeric($this->_unitId)) {
 			$where .= ' AND unit_id = :unitId';
 			$binds[':unitId'] = $this->_unitId;
-	    } else if(!empty($this->_name)) {
-			$where .= ' AND name = :name';
-			$binds[':name'] = $this->_name;	
+	    } else if(!empty($this->_name) && is_numeric($this->_locationId)) {
+			$where .= ' AND name = :name AND location_id = :locationId';
+			$binds[':name'] = $this->_name;
+			$binds[':locationId'] = $this->_locationId;
 		} else {
-		    
 			throw new Zend_Exception("No unit id supplied");
 		}
 	    
