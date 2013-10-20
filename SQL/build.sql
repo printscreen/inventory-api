@@ -36,11 +36,11 @@ CREATE TABLE resource (
     PRIMARY KEY (resource_id)
 );
 
-INSERT INTO resource 
-    (name) 
-VALUES 
+INSERT INTO resource
+    (name)
+VALUES
     ('default:index:index')
-,   ('admin:location:get')    
+,   ('admin:location:get')
 ,   ('admin:location:view')
 ,   ('admin:location:edit')
 ,   ('admin:user:get')
@@ -59,6 +59,23 @@ VALUES
 ,   ('admin:unit:delete-unit-user')
 ,   ('admin:unit:unit-users')
 ,   ('admin:unit:unit-available-users')
+,   ('admin:item:view-item-type')
+,   ('admin:item:get-item-type')
+,   ('admin:item:edit-item-type')
+,   ('admin:item:delete-item-type')
+,   ('admin:item:view-item-attribute-type')
+,   ('admin:item:view-item-type-attribute')
+,   ('admin:item:get-item-type-attribute')
+,   ('admin:item:edit-item-type-attribute')
+,   ('admin:item:delete-item-type-attribute')
+,   ('admin:item:edit-item-type-attribute-order')
+,   ('admin:item:location-item-type')
+,   ('admin:item:location-available-item-type')
+,   ('admin:item:add-location-item-type')
+,   ('admin:item:delete-location-item-type')
+,   ('default:location:view')
+,   ('default:unit:view')
+,   ('default:item:view-by-unit')
 ;
 
 CREATE TABLE user_type_resource (
@@ -93,7 +110,24 @@ VALUES
     (17,1),(17,2), -- admin:unit:add-unit-users
     (18,1),(18,2), -- admin:unit:delete-users
     (19,1),(19,2), -- admin:unit:unit-users
-    (20,1),(20,2) -- admin:unit:unit-available-users
+    (20,1),(20,2), -- admin:unit:unit-available-users
+    (21,1), -- admin:item:view-item-type
+    (22,1), -- admin:item:get-item-type
+    (23,1), -- admin:item:edit-item-type
+    (24,1), -- admin:item:delete-item-type
+    (25,1), -- admin:item:view-item-attribute-type
+    (26,1), -- admin:item:view-item-type-attribute
+    (27,1), -- admin:item:get-item-type-attribute
+    (28,1), -- admin:item:edit-item-type-attribute
+    (29,1), -- admin:item:delete-item-type-attribute
+    (30,1), -- admin:item:edit-item-type-attribute-order
+    (31,1), -- admin:item:location-item-type
+    (32,1), -- admin:item:location-available-item-type
+    (33,1), -- admin:item:add-location-item-type
+    (34,1), -- admin:item:delete-location-item-type
+    (35,1),(35,2),(35,3), -- default:location:view
+    (36,1),(36,2),(36,3), -- default:unit:view
+    (37,1),(37,2),(37,3) -- default:item:view-by-unit
 ;
 
 
@@ -147,22 +181,43 @@ CREATE TABLE item_type (
     PRIMARY KEY (item_type_id)
 );
 
+CREATE TABLE item_type_location (
+    item_type_location_id   INT(10)     NOT NULL auto_increment,
+    item_type_id            INT(10)     NOT NULL,
+    location_id             INT(10)     NOT NULL,
+    PRIMARY KEY (item_type_location_id),
+    FOREIGN KEY (item_type_id) REFERENCES item_type(item_type_id) ON DELETE CASCADE,
+    FOREIGN KEY (location_id) REFERENCES location(location_id) ON DELETE CASCADE,
+    UNIQUE KEY item_type_id_location_id (item_type_id,location_id)
+);
+
 CREATE TABLE item_attribute_type (
     item_attribute_type_id  INT(10)         NOT NULL auto_increment,
     name                    VARCHAR(255)    NOT NULL,
-    item_value              TEXT            NULL,
     PRIMARY KEY (item_attribute_type_id)
 );
+
+INSERT INTO item_attribute_type
+    (name)
+VALUES
+    ('General'),
+    ('Numbers'),
+    ('Select'),
+    ('MultiSelect'),
+    ('Text'),
+    ('Range')
+;
 
 CREATE TABLE item_type_attribute (
     item_type_attribute_id  INT(10)         NOT NULL auto_increment,
     item_type_id            INT(10)         NOT NULL,
     item_attribute_type_id  INT(10)         NOT NULL,
     name                    VARCHAR(255)    NOT NULL,
+    value                   TEXT            NULL,
     order_number            INT(10)         NULL,
     PRIMARY KEY (item_type_attribute_id),
-    FOREIGN KEY (item_type_id) REFERENCES item_type(item_type_id),
-    FOREIGN KEY (item_attribute_type_id) REFERENCES item_attribute_type(item_attribute_type_id)
+    FOREIGN KEY (item_type_id) REFERENCES item_type(item_type_id) ON DELETE CASCADE,
+    FOREIGN KEY (item_attribute_type_id) REFERENCES item_attribute_type(item_attribute_type_id) ON DELETE CASCADE
 );
 
 CREATE TABLE item (
@@ -178,13 +233,13 @@ CREATE TABLE item (
     FOREIGN KEY (user_unit_id) REFERENCES user_unit(user_unit_id)
 );
 
-CREATE TABLE item_attribute_value (
+CREATE TABLE item_type_attribute_value (
     item_attribute_value_id INT(10)         NOT NULL auto_increment,
     item_type_attribute_id  INT(10)         NOT NULL,
     item_id                 INT(10)         NOT NULL,
     value                   TEXT            NOT NULL,
     PRIMARY KEY (item_attribute_value_id),
-    FOREIGN KEY (item_type_attribute_id) REFERENCES item_type_attribute(item_type_attribute_id),
-    FOREIGN KEY (item_id) REFERENCES item(item_id),
+    FOREIGN KEY (item_type_attribute_id) REFERENCES item_type_attribute(item_type_attribute_id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES item(item_id) ON DELETE CASCADE,
     UNIQUE KEY item_type_attribte_id_item_id (item_type_attribute_id, item_id)
 );
