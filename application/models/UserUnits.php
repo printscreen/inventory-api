@@ -20,7 +20,7 @@ class Model_UserUnits extends Model_Base_Db
 		$this->_units = array();
 	}
 	
-    public function getUnitsByUserId($sort = null, $offset = null, $limit = null)
+    public function getUnitsByUserId($locationId = null, $active = true, $sort = null, $offset = null, $limit = null)
 	{
 		if(empty($this->_userId) || !is_numeric($this->_userId)) {
 		    throw new Zend_Exception('No user id supplied');
@@ -40,21 +40,29 @@ class Model_UserUnits extends Model_Base_Db
 			  	 ) AS total
 			FROM unit u
 			INNER JOIN user_unit uu USING(unit_id)
-			WHERE uu.user_id = :userId 
+			WHERE uu.active = :active 
+			AND uu.user_id = :userId 
+			". (is_numeric($locationId) ? 'AND location_id = :locationId' : '')."
 			ORDER BY :sort " . $this->getDirection($sort) ."
 			LIMIT :offset,:limit
  		";
+
 	    $query = $this->_db->prepare($sql);
 	    
 	    $sort = $this->getSort($sort);
 	    $offset = $this->getOffset($offset);
 	    $limit = $this->getLimit($limit);
 	    $userId = $this->convertToInt($this->_userId);
+	    $locationId = $this->convertToInt($locationId);
 	    
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
 	    $query->bindParam(':sort', $sort, PDO::PARAM_INT);
 	    $query->bindParam(':offset', $offset, PDO::PARAM_INT);
 	    $query->bindParam(':limit', $limit, PDO::PARAM_INT);
+	    $query->bindParam(':active', $active, PDO::PARAM_BOOL);
+	    if(is_numeric($locationId)) {
+	    	$query->bindParam(':locationId', $locationId, PDO::PARAM_INT);
+	    }
 		$query->execute();
 		
 		$result = $query->fetchAll();
