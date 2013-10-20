@@ -4,7 +4,7 @@ class Inventory_Controller_Plugin_Acl extends Zend_Controller_Plugin_Abstract
 	protected $_publicModules;
 	protected $_publicControllers;
 	protected $_publicActions;
-	
+
 	public function __construct()
 	{
 		$this->_publicModules = array();
@@ -16,15 +16,15 @@ class Inventory_Controller_Plugin_Acl extends Zend_Controller_Plugin_Abstract
 				, 'default:auth:logout'
 				, 'default:error:error');
 	}
-	
+
     public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
 	{
 	    //If not dispatchable
 		if(!(Zend_Controller_Front::getInstance()->getDispatcher()->isDispatchable($request))) {
             return false;
         }
-	    
-	    $reqModule = $this->getRequest()->getModuleName();  
+
+	    $reqModule = $this->getRequest()->getModuleName();
 		$reqController = $this->getRequest()->getControllerName();
 		$reqAction = $this->getRequest()->getActionName();
 		$reqModuleStr = $reqModule;
@@ -36,15 +36,15 @@ class Inventory_Controller_Plugin_Acl extends Zend_Controller_Plugin_Abstract
 			//If module, controller, or action is publically open, don't run it through ACL
 			return;
 		}
-		
+
 		$token = new Model_Token(array(
 		    'token' => $this->getRequest()->getParam('token')
 		));
 		if(!$token->load()){
-		    throw new Zend_Exception('You must pass a valid token');
+		    throw new Inventory_Acl_Exception('You must pass a valid token');
 		}
 		Zend_Registry::set(TOKEN, $token);
-		
+
 		//Check if the module-controller-action is valid
 		$dispatcher = Zend_Controller_Front::getInstance()->getDispatcher();
 		if ($dispatcher->isDispatchable($request)) {
