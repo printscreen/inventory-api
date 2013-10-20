@@ -123,7 +123,7 @@ class Model_UserLocations extends Model_Base_Db
 	    $query = $this->_db->prepare($sql);
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
 	    for($i = 0; $i < count($locationIds); $i++) {
-	        $query->bindParam(':'.$locationIds[$i], $locationIds[$i]*, PDO::PARAM_INT);
+	        $query->bindParam(':'.$locationIds[$i], $locationIds[$i], PDO::PARAM_INT);
 	    }
 
 	    $query->execute();
