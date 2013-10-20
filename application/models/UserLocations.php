@@ -10,9 +10,9 @@ class Model_UserLocations extends Model_Base_Db
             'userId' => null,
             'db' => null,
             ), $options);
-            
+
 	    parent::__construct($settings['db']);
-	    
+
 		$this->_userId = $settings['userId'];
 		$this->_locationIds = $settings['locationIds'];
 		$this->_userLocations = array();
@@ -27,7 +27,7 @@ class Model_UserLocations extends Model_Base_Db
     			  , :userId AS user_id
     			  , user_location_id
     			FROM
-    				location 
+    				location
     			INNER JOIN user_location USING (location_id)
     			WHERE user_id = :userId
     			UNION
@@ -40,14 +40,14 @@ class Model_UserLocations extends Model_Base_Db
 					location
 				WHERE
 					(SELECT user_type_id FROM users WHERE user_id = :userId) = 1
-					
+
 		';
 	    $query = $this->_db->prepare($sql);
-	    
+
 	    $userId = $this->convertToInt($this->_userId);
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
 		$query->execute();
-		
+
 		$result = $query->fetchAll();
 
 		$this->_userLocations = array();
@@ -60,7 +60,7 @@ class Model_UserLocations extends Model_Base_Db
 		}
 		return $this->_userLocations;
 	}
-	
+
     public function getAvailableUserLocations()
 	{
 		$sql = '
@@ -70,18 +70,18 @@ class Model_UserLocations extends Model_Base_Db
     			  , :userId AS user_id
     			  , null AS user_location_id
     			FROM
-    				location 
+    				location
     			WHERE location_id NOT IN (
     				SELECT location_id FROM user_location WHERE user_id = :userId
     			)
-					
+
 		';
 	    $query = $this->_db->prepare($sql);
-	    
+
 	    $userId = $this->convertToInt($this->_userId);
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
 		$query->execute();
-		
+
 		$result = $query->fetchAll();
 
 		$this->_userLocations = array();
@@ -94,7 +94,7 @@ class Model_UserLocations extends Model_Base_Db
 		}
 		return $this->_userLocations;
 	}
-	
+
 	public function addUserLocations($locationIds)
 	{
 	    if(!is_array($locationIds) || !is_numeric($this->_userId)) {
@@ -111,7 +111,7 @@ class Model_UserLocations extends Model_Base_Db
 	    }
 	    return $this;
 	}
-	
+
 	public function deleteUserLocations($locationIds)
 	{
 	    if(!is_array($locationIds) || !is_numeric($this->_userId)) {
@@ -122,13 +122,14 @@ class Model_UserLocations extends Model_Base_Db
 	    $sql = 'DELETE FROM user_location WHERE user_id = :userId AND location_id IN ('.$this->arrayToIn($locationIds).')';
 	    $query = $this->_db->prepare($sql);
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
-	    foreach($locationIds as $locationId) {
-	        $query->bindParam(':'.$locationId, $locationId, PDO::PARAM_INT);
+	    for($i = 0; $i < count($locationIds); $i++) {
+	        $query->bindParam(':'.$locationIds[$i], $locationIds[$i]*, PDO::PARAM_INT);
 	    }
+
 	    $query->execute();
         return $this;
 	}
-	
+
 	public function toArray()
 	{
 	    $userLocations = array();
