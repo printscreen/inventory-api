@@ -4,7 +4,7 @@ class Model_User extends Model_Base_Db
 	const USER_TYPE_ADMIN = 1;
 	const USER_TYPE_EMPLOYEE = 2;
 	const USER_TYPE_CUSTOMER = 3;
-    
+
     protected $_userId;
 	protected $_firstName;
 	protected $_lastName;
@@ -12,7 +12,7 @@ class Model_User extends Model_Base_Db
 	protected $_userTypeId;
 	protected $_active;
 	protected $_total;
-	
+
 	public function __construct(array $options = array())
 	{
 	    $settings = array_merge(array(
@@ -33,23 +33,23 @@ class Model_User extends Model_Base_Db
 		$this->_userTypeId = $settings['userTypeId'];;
 		$this->_active = $settings['active'];;
 	}
-	
+
 	public function isActive()
 	{
 		return $this->_active;
 	}
-	
+
 	public function loadRecord($record)
-	{		
+	{
 		$this->_userId = $record->user_id;
 		$this->_firstName = $record->first_name;
 		$this->_lastName = $record->last_name;
 		$this->_email = $record->email;
 		$this->_userTypeId = $record->user_type_id;
 		$this->_active = $record->active;
-		$this->_total = $record->total;		
+		$this->_total = $record->total;
 	}
-	
+
 	public function loadUserIntoSession(&$session)
 	{
 	    $session->userId = $this->_userId;
@@ -58,7 +58,7 @@ class Model_User extends Model_Base_Db
         $session->lastName = $this->_lastName;
         $session->userTypeId = $this->_userTypeId;
 	}
-		
+
 	public function load()
 	{
 	    $where = 'WHERE true';
@@ -72,7 +72,7 @@ class Model_User extends Model_Base_Db
 		} else {
 			throw new Zend_Exception("No user id or email supplied");
 		}
-	    
+
 	    $sql = "
 			SELECT
 			  	user_id
@@ -91,11 +91,11 @@ class Model_User extends Model_Base_Db
 		if(!$result || count($result) != 1) {
 			return false;
 		}
-		
+
 		$this->loadRecord($result[0]);
 		return true;
 	}
-		
+
 	public function insert($password = null)
 	{
 	    $sql = "INSERT INTO users (
@@ -115,28 +115,28 @@ class Model_User extends Model_Base_Db
 	    		  , :active
 	    		)";
 	    $query = $this->_db->prepare($sql);
-	    
+
 	    $active = $this->convertFromBoolean($this->_active);
 	    $userTypeId = $this->convertToInt($this->_userTypeId);
 	    $password = self::hashPassword($password);
-	    
+
 	    $query->bindParam(':password', $password, PDO::PARAM_STR);
 	    $query->bindParam(':firstName', $this->_firstName , PDO::PARAM_STR);
 	    $query->bindParam(':lastName', $this->_lastName , PDO::PARAM_STR);
 	    $query->bindParam(':email', $this->_email , PDO::PARAM_STR);
 	    $query->bindParam(':userTypeId', $userTypeId, PDO::PARAM_INT);
 	    $query->bindParam(':active', $active, PDO::PARAM_BOOL);
-	    
+
 		$result = $query->execute();
-		
+
 		if(!$result) {
 			return false;
 		}
         $this->_userId = $this->_db->lastInsertId('users','user_id');
-		
+
 		return true;
 	}
-	
+
 	public function update()
 	{
 	    if(empty($this->_userId) || !is_numeric($this->_userId)) {
@@ -155,7 +155,7 @@ class Model_User extends Model_Base_Db
 	    $userId = $this->convertToInt($this->_userId);
 	    $active = $this->convertFromBoolean($this->_active);
 	    $userTypeId = $this->convertToInt($this->_userTypeId);
-	    
+
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
 	    $query->bindParam(':firstName', $this->_firstName , PDO::PARAM_STR);
 	    $query->bindParam(':lastName', $this->_lastName , PDO::PARAM_STR);
@@ -163,13 +163,13 @@ class Model_User extends Model_Base_Db
 	    $query->bindParam(':userTypeId', $userTypeId, PDO::PARAM_INT);
 	    $query->bindParam(':active', $active, PDO::PARAM_BOOL);
 		$result = $query->execute();
-		
+
 		if(!$result) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	public static function hashPassword($password)
 	{
 	    if(empty($password)) {
@@ -185,7 +185,7 @@ class Model_User extends Model_Base_Db
 	        SALT
 	    );
 	}
-	
+
 	public function getTemporaryPassword()
 	{
 	    if(empty($this->_firstName) || empty($this->_lastName)) {
@@ -196,7 +196,7 @@ class Model_User extends Model_Base_Db
 	          , trim(strtolower($this->_lastName))
 	    );
 	}
-	
+
 	public function hasTemporaryPassword()
 	{
 	    if(empty($this->_userId)) {
@@ -211,15 +211,15 @@ class Model_User extends Model_Base_Db
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
 	    $query->execute($binds);
 		$result = $query->fetchAll();
-		return current($result)->password == self::hashPassword(self::getTemporaryPassword());	    
+		return current($result)->password == self::hashPassword(self::getTemporaryPassword());
 	}
-	
+
 	public function canEditUser($userToEditUserId)
 	{
 	    // Case 1: Employees can not access other employees
 	    // Case 2: If user shares a location
 	    // Case 3: If the user is an admin
-	    
+
 	    $sql = 'SELECT COALESCE(
 	    	(
 	    	 SELECT false
@@ -230,8 +230,8 @@ class Model_User extends Model_Base_Db
 	    	 AND u.user_type_id != 1
 	    	),
 	    	(
-	    	 SELECT true 
-	    	 FROM user_location ul 
+	    	 SELECT true
+	    	 FROM user_location ul
 	    	 JOIN user_location ull ON ul.location_id = ull.location_id
 	    	 WHERE ul.user_id = :userId AND ull.user_id = :userToEditUserId LIMIT 1
 	    	),
@@ -249,7 +249,7 @@ class Model_User extends Model_Base_Db
 	    $result = $query->fetch();
 	    return (bool)$result->can_edit;
 	}
-	
+
 	//Setters
 	public function setUserId($userId){$this->_userId = $userId; return $this;}
 	public function setFirstName($firstName){$this->_firstName = $firstName; return $this;}
@@ -257,7 +257,7 @@ class Model_User extends Model_Base_Db
 	public function setEmail($email){$this->_email = $email; return $this;}
 	public function setUserTypeId($userTypeId){$this->_userTypeId = $userTypeId; return $this;}
 	public function setActive($active){$this->_active = $active; return $this;}
-	
+
 	//Getters
 	public function getUserId(){return $this->_userId;}
 	public function getFirstName(){return $this->_firstName;}
