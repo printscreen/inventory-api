@@ -8,9 +8,9 @@ class Model_Locations extends Model_Base_Db
 		$settings = array_merge(array(
             'db' => null,
             ), $options);
-            
+
 	    parent::__construct($settings['db']);
-	    
+
 		$this->_locations = array();
 	}
 
@@ -26,17 +26,17 @@ class Model_Locations extends Model_Base_Db
 			  , zip
 			  , phone_number
 			  , active
-			  , ( SELECT 
-			  	    count(*) 
-			  	  FROM location 
+			  , ( SELECT
+			  	    count(*)
+			  	  FROM location
 			  	) AS total
 			FROM location
 			WHERE active = :active
-			ORDER BY :sort ".$this->getDirection($sort)." 
+			ORDER BY :sort ".$this->getDirection($sort)."
 			LIMIT :offset,:limit
  		";
 	    $query = $this->_db->prepare($sql);
-	    
+
 	    $sort = $this->getSort($sort);
 	    $offset = $this->getOffset($offset);
 	    $limit = $this->getLimit($limit);
@@ -47,7 +47,7 @@ class Model_Locations extends Model_Base_Db
 	    $query->bindParam(':offset', $offset, PDO::PARAM_INT);
 	    $query->bindParam(':limit', $limit, PDO::PARAM_INT);
 		$query->execute();
-		
+
 		$result = $query->fetchAll();
 
 		$this->_locations = array();
@@ -60,7 +60,7 @@ class Model_Locations extends Model_Base_Db
 		}
 		return $this->_locations;
 	}
-	
+
 	public function toArray()
 	{
 	    $locations = array();
