@@ -1,3 +1,4 @@
+BEGIN;
 
 CREATE TABLE user_type (
     user_type_id    INT(10)         NOT NULL auto_increment,
@@ -76,6 +77,11 @@ VALUES
 ,   ('default:location:view')
 ,   ('default:unit:view')
 ,   ('default:item:view-by-unit')
+,   ('default:item:edit')
+,   ('default:item:delete')
+,   ('default:item:get-location-item-type')
+,   ('default:item:get-item-type-attribute')
+,   ('default:item:get-item')
 ;
 
 CREATE TABLE user_type_resource (
@@ -127,7 +133,12 @@ VALUES
     (34,1), -- admin:item:delete-location-item-type
     (35,1),(35,2),(35,3), -- default:location:view
     (36,1),(36,2),(36,3), -- default:unit:view
-    (37,1),(37,2),(37,3) -- default:item:view-by-unit
+    (37,1),(37,2),(37,3), -- default:item:view-by-unit
+    (38,1),(38,2),(38,3), -- default:item:edit
+    (39,1),(39,2),(39,3), -- default:item:delete
+    (40,1),(40,2),(40,3), -- default:item:get-location-item-type
+    (41,1),(41,2),(41,3), -- default:item:get-item-type-attribute
+    (42,1),(42,2),(42,3) -- default:item:get-item
 ;
 
 
@@ -200,11 +211,11 @@ CREATE TABLE item_attribute_type (
 INSERT INTO item_attribute_type
     (name)
 VALUES
-    ('General'),
+    ('Text'),
     ('Numbers'),
     ('Select'),
     ('MultiSelect'),
-    ('Text'),
+    ('Large Text'),
     ('Range')
 ;
 
@@ -228,18 +239,11 @@ CREATE TABLE item (
     name            VARCHAR(255)    NOT NULL UNIQUE,
     description     TEXT            NULL,
     location        TEXT            NULL,
+    attribute       TEXT            NULL,
+    count           INT(10)         NULL,
     PRIMARY KEY (item_id),
     FOREIGN KEY (item_type_id) REFERENCES item_type(item_type_id),
     FOREIGN KEY (user_unit_id) REFERENCES user_unit(user_unit_id)
 );
 
-CREATE TABLE item_type_attribute_value (
-    item_attribute_value_id INT(10)         NOT NULL auto_increment,
-    item_type_attribute_id  INT(10)         NOT NULL,
-    item_id                 INT(10)         NOT NULL,
-    value                   TEXT            NOT NULL,
-    PRIMARY KEY (item_attribute_value_id),
-    FOREIGN KEY (item_type_attribute_id) REFERENCES item_type_attribute(item_type_attribute_id) ON DELETE CASCADE,
-    FOREIGN KEY (item_id) REFERENCES item(item_id) ON DELETE CASCADE,
-    UNIQUE KEY item_type_attribte_id_item_id (item_type_attribute_id, item_id)
-);
+COMMIT;

@@ -118,6 +118,39 @@ class Model_ItemType extends Model_Base_Db
         return true;
     }
 
+    public function canEditItemType($userId)
+    {
+        if(!is_numeric($userId) || !is_numeric($this->_itemTypeId)) {
+            throw new Zend_Exception('You must pass a userId and itemTypeId');
+        }
+
+        $sql = 'SELECT COALESCE(
+            (
+                SELECT true
+                FROM item_type_location itl
+                INNER JOIN user_location ul ON itl.location_id = ul.location_id
+                WHERE itl.item_type_id = :itemTypeId
+                AND ul.user_id = :userId
+                LIMIT 1
+            ),
+            (
+             SELECT CASE WHEN user_type_id = 1 THEN true END FROM users WHERE user_id = :userId
+            ),
+            false
+        ) AS "can_edit"';
+
+        $itemTypeId = $this->convertToInt($this->_itemTypeId);
+        $userId = $this->convertToInt($userId);
+
+        $query = $this->_db->prepare($sql);
+        $query->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $query->bindParam(':itemTypeId', $itemTypeId, PDO::PARAM_INT);
+
+        $query->execute($binds);
+        $result = $query->fetch();
+        return (bool)$result->can_edit;
+    }
+
     public function canDelete()
     {
         if(empty($this->_itemTypeId) || !is_numeric($this->_itemTypeId)) {
