@@ -26,6 +26,10 @@ class Admin_Form_ItemTypeAttribute extends Inventory_Form
         $name->setRequired(true)
                ->addFilter('StripTags')
                ->addFilter('StringTrim')
+               ->addValidator(new Inventory_Validate_NotInArray(
+               		array('haystack' => array('name', 'location', 'description'),
+               			  'normalize' => true
+               )))
                ->addValidator('NotEmpty', true);
         $this->addElement($name);
 

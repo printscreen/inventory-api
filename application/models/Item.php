@@ -24,10 +24,11 @@ class Model_Item extends Model_Base_Db
             'name' => null,
             'description' => null,
             'location' => null,
-            'attrubte' => null,
+            'attribute' => null,
             'count' => null,
             'db' => null,
             ), $options);
+
         parent::__construct($settings['db']);
         $this->_itemId = $settings['itemId'];
         $this->_itemTypeId = $settings['itemTypeId'];
@@ -35,7 +36,7 @@ class Model_Item extends Model_Base_Db
         $this->_locationId = $settings['locationId'];
         $this->_name = $settings['name'];
         $this->_description = $settings['description'];
-        $this->_attribute = json_encode($settings['attrubte']);
+        $this->_attribute = Zend_Json::encode($settings['attribute']);
         $this->_count = $settings['count'];
         $this->_location = $settings['location'];
     }
@@ -43,7 +44,8 @@ class Model_Item extends Model_Base_Db
     public function loadRecord($record)
     {
         $this->_itemId = $record->item_id;
-        $this->_itemTypeId = $record->item_type_name;
+        $this->_itemTypeId = $record->item_type_id;
+        $this->_itemTypeName = $record->item_type_name;
         $this->_userUnitId = $record->user_unit_id;
         $this->_locationId = $record->location_id;
         $this->_name = $record->name;
@@ -54,13 +56,18 @@ class Model_Item extends Model_Base_Db
         $this->_total = $record->total;
     }
 
-    public function load()
+    public function load($userId = null)
     {
         $where = 'WHERE true';
         $binds = array();
         if(!empty($this->_itemId) && is_numeric($this->_itemId)) {
             $where .= ' AND i.item_id = :itemId';
-            $binds[':itemId'] = $this->_itemId;
+            $binds[':itemId'] = array('value' => $this->_itemId, 'type' => PDO::PARAM_INT);
+        } else if (is_numeric($userId) && !empty($this->_name)) {
+            $where = ' INNER JOIN user_unit uu ON i.user_unit_id = uu.user_unit_id ' .
+                     $where . ' AND LOWER(i.name) = :name AND uu.user_id = :userId ';
+            $binds[':name'] = array('value' => strtolower(trim($this->_name)), 'type' => PDO::PARAM_STR);
+            $binds[':userId'] = array('value' => $userId, 'type' => PDO::PARAM_INT);
         } else {
             throw new Zend_Exception("No item id supplied");
         }
@@ -84,9 +91,10 @@ class Model_Item extends Model_Base_Db
         ";
 
         $query = $this->_db->prepare($sql);
-        $query->execute($binds);
-        $result = $query->fetchAll();
+        $this->bind($query, $binds);
 
+        $query->execute();
+        $result = $query->fetchAll();
         if(!$result || count($result) != 1) {
             return false;
         }
@@ -117,6 +125,7 @@ class Model_Item extends Model_Base_Db
                   , :attribute
                   , :count
                 )";
+
         $query = $this->_db->prepare($sql);
 
         $itemTypeId = $this->convertToInt($this->_itemTypeId);
@@ -157,6 +166,7 @@ class Model_Item extends Model_Base_Db
                   , location = COALESCE(:location, location)
                   , attribute = COALESCE(:attribute, attribute)
                   , count = COALESCE(:count, count)
+                  , last_modified = CURRENT_TIMESTAMP
                   WHERE item_id = :itemId;
                 ";
         $query = $this->_db->prepare($sql);

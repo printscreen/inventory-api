@@ -2,7 +2,7 @@
 class Model_Base_Db extends Model_Base_Base
 {
 	protected $_db;
-	
+
 	public function __construct(Zend_Db_Adapter_Abstract $db = null)
 	{
 		if(!empty($db)) {
@@ -11,7 +11,7 @@ class Model_Base_Db extends Model_Base_Base
 		    $this->_db = Zend_Registry::get(INVENTORY_DB);
 		}
 	}
-	
+
 	protected function getDirection($sort = null)
 	{
 	    if(empty($sort) || !is_numeric($sort)) {
@@ -20,7 +20,7 @@ class Model_Base_Db extends Model_Base_Base
 	        return intval($sort) < 0 ? 'DESC' : 'ASC';
 	    }
 	}
-	
+
 	protected function getSort($sort = null) {
 	    if(empty($sort) || !is_numeric($sort)) {
 	        return 1;
@@ -28,7 +28,7 @@ class Model_Base_Db extends Model_Base_Base
 	        return abs($sort);
 	    }
 	}
-	
+
 	protected function getOffset($offset = null) {
 	    if(is_null($offset) || !is_numeric($offset)) {
 	        return 0;
@@ -36,7 +36,7 @@ class Model_Base_Db extends Model_Base_Base
 	        return intval($offset);
 	    }
 	}
-	
+
 	protected function getLimit($limit = null) {
 	    if(empty($limit) || !is_numeric($limit)) {
 	        return PHP_INT_MAX;
@@ -44,7 +44,7 @@ class Model_Base_Db extends Model_Base_Base
 	        return intval($limit);
 	    }
 	}
-	
+
 	protected function convertFromBoolean($value)
     {
         if(is_bool($value) && $value) {
@@ -55,7 +55,7 @@ class Model_Base_Db extends Model_Base_Base
             return strtolower(trim($value)) == 'true' ? 1:0;
         }
     }
-    
+
     protected function convertToInt($value)
     {
         if(is_numeric($value)) {
@@ -64,7 +64,7 @@ class Model_Base_Db extends Model_Base_Base
             return null;
         }
     }
-    
+
     protected function arrayToSqlArray($array)
     {
         if(empty($array) && !is_array($array)) {
@@ -73,7 +73,7 @@ class Model_Base_Db extends Model_Base_Base
         $result = '{' . implode(',',$array) . '}';
         return $result;
     }
-    
+
     protected function arrayToIn($array)
     {
         if(empty($array) && !is_array($array)) {
@@ -85,8 +85,8 @@ class Model_Base_Db extends Model_Base_Base
         }
         return implode(',',$newVals);
     }
-    
-    public static function bind(&$query, array $binds) 
+
+    public static function bind(&$query, array $binds)
     {
         foreach($binds as $key => $val) {
             $query->bindParam($key, $val['value'], $val['type']);

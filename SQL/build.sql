@@ -215,8 +215,7 @@ VALUES
     ('Numbers'),
     ('Select'),
     ('MultiSelect'),
-    ('Large Text'),
-    ('Range')
+    ('TextArea')
 ;
 
 CREATE TABLE item_type_attribute (
@@ -236,14 +235,16 @@ CREATE TABLE item (
     item_type_id    INT(10)         NOT NULL,
     user_unit_id    INT(10)         NOT NULL,
     location_id     INT(10)         NULL,
-    name            VARCHAR(255)    NOT NULL UNIQUE,
+    name            VARCHAR(255)    NOT NULL,
     description     TEXT            NULL,
     location        TEXT            NULL,
     attribute       TEXT            NULL,
     count           INT(10)         NULL,
+    last_modified   TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (item_id),
     FOREIGN KEY (item_type_id) REFERENCES item_type(item_type_id),
-    FOREIGN KEY (user_unit_id) REFERENCES user_unit(user_unit_id)
+    FOREIGN KEY (user_unit_id) REFERENCES user_unit(user_unit_id),
+    UNIQUE KEY item_id_name (item_id, name)
 );
 
 COMMIT;

@@ -10,23 +10,38 @@ class ItemController extends Inventory_Controller_Action
     public function viewByUnitAction()
     {
         $success = false;
-        $items = array();
+        $filteredItems = array();
+        $recentlyModified = array();
         $form = new Form_AccessUnit($this->getRequesterUserId());
         if($form->isValid($this->getRequest()->getParams())) {
             $getItems = new Model_Items();
             $getItems->getUserItemsInUnit(
                 $this->getRequesterUserId()
               , $form->getElement('unitId')->getValue()
+              , $this->getRequest()->getParam('itemTypeId')
               , $this->getRequest()->getParam('sort')
               , $this->getRequest()->getParam('offset')
               , $this->getRequest()->getParam('limit')
             );
-            $items = $getItems->toArray();
+            $filteredItems = $getItems->toArray();
+
+            $getItems->getUserItemsInUnit(
+                $this->getRequesterUserId()
+              , $form->getElement('unitId')->getValue()
+              , $this->getRequest()->getParam('itemTypeId')
+              , $sortByLastModified = -11
+              , $offset = 0
+              , $limit = 3
+            );
+
+            $recentlyModified = $getItems->toArray();
+
             $success = true;
         }
         $this->_helper->json(array(
             'success' => $success,
-            'items' => $items,
+            'filteredItems' => $filteredItems,
+            'recentlyModified' => $recentlyModified,
             'errors' => $form->getFormErrors()
         ), $this->getRequest()->getParam('callback'));
     }
@@ -52,7 +67,39 @@ class ItemController extends Inventory_Controller_Action
 
     public function editAction()
     {
+        $success = false;
+        $form = new Form_Item($this->getRequesterUserId());
+        if($form->isValid($this->getRequest()->getParams())) {
+            $userUnit = new Model_UserUnit(array(
+                'userId' => $this->getRequesterUserId()
+              , 'unitId' => $form->getElement('unitId')->getValue()
+            ));
+            $userUnit->load();
 
+            $item = new Model_Item(array(
+                'itemId' => $form->getElement('itemId')->getValue()
+              , 'itemTypeId' => $form->getElement('itemTypeId')->getValue()
+              , 'userUnitId' => $userUnit->getUserUnitId()
+              , 'locationId' => $userUnit->getLocationId()
+              , 'name' => $form->getElement('name')->getValue()
+              , 'description' => $form->getElement('description')->getValue()
+              , 'location' => $form->getElement('location')->getValue()
+              , 'attribute' => Zend_Json::decode($form->getElement('attributes')->getValue())
+              , 'count' => $form->getElement('count')->getValue()
+            ));
+            if(is_numeric($form->getElement('itemId')->getValue())) {
+                $item->update();
+            } else {
+                $item->insert();
+            }
+            $itemId = $item->getItemId();
+            $success = true;
+        }
+        $this->_helper->json(array(
+            'success' => $success,
+            'itemId' => $itemId,
+            'errors' => $form->getFormErrors()
+        ), $this->getRequest()->getParam('callback'));
     }
 
     public function deleteAction()

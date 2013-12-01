@@ -28,6 +28,7 @@ class Model_Items extends Model_Base_Db
               , i.location
               , i.attribute
               , i.count
+              , i.last_modified
               , ( SELECT
                     count(*)
                     FROM item i
@@ -40,7 +41,7 @@ class Model_Items extends Model_Base_Db
             INNER JOIN user_unit uu ON i.user_unit_id = uu.user_unit_id
             WHERE uu.user_id = :userId AND uu.unit_id = :unitId
             " . (is_numeric($itemTypeId) ? 'AND i.item_type_id = :itemTypeId ' : '') . "
-            ORDER BY :sort
+            ORDER BY :sort " . $this->getDirection($sort) . "
             LIMIT :offset,:limit
         ";
 
@@ -64,7 +65,7 @@ class Model_Items extends Model_Base_Db
 
         $result = $query->fetchAll();
 
-        $this->_users = array();
+        $this->_items = array();
         if(!empty($result)) {
             foreach($result as $key => $value) {
                 $item = new Model_Item();

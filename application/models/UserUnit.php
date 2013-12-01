@@ -3,13 +3,14 @@ class Model_UserUnit extends Model_Base_Db
 {
     protected $_userUnitId;
     protected $_userId;
+    protected $_locationId;
     protected $_firstName;
     protected $_lastName;
     protected $_email;
 	protected $_unitId;
 	protected $_active;
 	protected $_total;
-	
+
 	public function __construct(array $options = array())
 	{
 	    $settings = array_merge(array(
@@ -25,17 +26,18 @@ class Model_UserUnit extends Model_Base_Db
 		$this->_unitId = $settings['unitId'];
 		$this->_active = $settings['active'];
 	}
-	
+
 	public function loadRecord($record)
-	{		
+	{
 		$this->_userUnitId = $record->user_unit_id;
 	    $this->_userId = $record->user_id;
 		$this->_unitId = $record->unit_id;
+		$this->_locationId = $record->location_id;
 		$this->_firstName = $record->first_name;
 		$this->_lastName = $record->last_name;
 		$this->_email = $record->email;
 		$this->_active = $record->active;
-		$this->_total = $record->total;		
+		$this->_total = $record->total;
 	}
 
 	public function load()
@@ -49,17 +51,15 @@ class Model_UserUnit extends Model_Base_Db
 			$where .= ' AND uu.unit_id = :unitId AND uu.user_id = :userId';
 			$binds[':unitId'] = $this->_unitId;
 			$binds[':userId'] = $this->_userId;
-		} else if($active && is_numeric($this->_unitId)) {
-			$where .= ' AND uu.unit_id = :unitId AND active';
-			$binds[':unitId'] = $this->_unitId;
 		} else {
 			throw new Zend_Exception("No user unit id or unit id supplied");
 		}
-	    
+
 	    $sql = "
 			SELECT
 			  	uu.user_unit_id
 			  ,	uu.user_id
+			  , un.location_id
 			  , u.first_name
 			  , u.last_name
 			  , u.email
@@ -68,6 +68,7 @@ class Model_UserUnit extends Model_Base_Db
 			  , 1 AS total
 			FROM user_unit uu
 			INNER JOIN users u ON uu.user_id = u.user_id
+			INNER JOIN unit un ON un.unit_id = uu.unit_id
 			 $where LIMIT 1
  		";
         $query = $this->_db->prepare($sql);
@@ -77,11 +78,11 @@ class Model_UserUnit extends Model_Base_Db
 		if(!$result || count($result) != 1) {
 			return false;
 		}
-		
+
 		$this->loadRecord($result[0]);
 		return true;
 	}
-		
+
 	public function insert()
 	{
 	    $userId = $this->convertToInt($this->_userId);
@@ -89,7 +90,7 @@ class Model_UserUnit extends Model_Base_Db
 	    $sql = 'UPDATE user_unit SET active = null WHERE unit_id = :unitId';
 	    $query = $this->_db->prepare($sql);
 	    $query->bindParam(':unitId', $unitId, PDO::PARAM_INT);
-	    $query->execute();	    
+	    $query->execute();
 	    if(!$this->load()) {
 	        $sql = 'INSERT INTO user_unit (user_id, unit_id, active) VALUES (:userId, :unitId, true)';
 	    } else {
@@ -99,12 +100,12 @@ class Model_UserUnit extends Model_Base_Db
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
 	    $query->bindParam(':unitId', $unitId, PDO::PARAM_INT);
 	    $query->execute();
-		
+
 		if(!$result) {
 			return false;
 		}
         $this->_userUnitId = $this->_db->lastInsertId('user_unit','user_unit_id');
-		
+
 		return true;
 	}
 	/**
@@ -122,7 +123,7 @@ class Model_UserUnit extends Model_Base_Db
 	    $query->bindParam(':userUnitId', $userUnitId, PDO::PARAM_INT);
 	    $query->execute();
 	    $result = $query->fetchAll();
- 
+
 		if(!$result || count($result) != 1) {
 			$sql = 'DELETE FROM user_unit WHERE user_unit_id = :userUnitId';
 		} else {
@@ -131,19 +132,20 @@ class Model_UserUnit extends Model_Base_Db
 	    $query = $this->_db->prepare($sql);
 	    $query->bindParam(':userUnitId', $userUnitId, PDO::PARAM_INT);
 	    $query->execute();
-		
+
 		return true;
 	}
-	
+
 	//Setters
 	public function setUserUnitId($userUnitId){$this->_userUnitId = $userId; return $this;}
 	public function setUserId($userId){$this->_userId = $userId; return $this;}
     public function setUnitId($unitId){$this->_unitId = $unitId; return $this;}
 	public function setActive($active){$this->_active = $active; return $this;}
-	
+
 	//Getters
     public function getUserUnitId(){return $this->_userUnitId;}
 	public function getUserId(){return $this->_userId;}
+	public function getLocationId(){return $this->_locationId;}
 	public function getFirstName(){return $this->_firstName;}
 	public function getLastName(){return $this->_lastName;}
 	public function getEmail(){return $this->_email;}
