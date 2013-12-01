@@ -64,7 +64,7 @@ class Model_ItemTypes extends Model_Base_Db
                     (SELECT itl.item_type_id FROM item_type_location itl WHERE itl.location_id = :locationId)
                 ) AS total
             FROM item_type it
-            WHERE it.item_type_id IN
+            WHERE it.item_type_id NOT IN
             (SELECT itl.item_type_id FROM item_type_location itl WHERE itl.location_id = :locationId)
             ORDER BY :sort ".$this->getDirection($sort)."
             LIMIT :offset,:limit
