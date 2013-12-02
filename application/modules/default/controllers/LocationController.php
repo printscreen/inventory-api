@@ -1,7 +1,7 @@
 <?php
 
 class LocationController extends Inventory_Controller_Action
-{   
+{
     public function viewAction()
     {
         $locations = new Model_UserLocations(array(
@@ -11,6 +11,6 @@ class LocationController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => $success,
             'userLocations' => $locations->toArray()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 }

@@ -11,16 +11,16 @@ class Admin_LocationController extends Inventory_Controller_Action
             ));
             $getLocation->load();
             $location = $getLocation->toArray();
-            $success = true;  
+            $success = true;
         }
-        
+
         $this->_helper->json(array(
             'success' => $success,
             'location' => $location,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function viewAction()
     {
         $locations = new Model_Locations();
@@ -34,14 +34,14 @@ class Admin_LocationController extends Inventory_Controller_Action
         array(
             'success' => true,
             'locations' => $locations->toArray()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function editAction()
     {
         $form = new Admin_Form_Location($this->getRequesterUserId());
         $success = false;
-        if ($form->isValid($this->getRequest()->getParams())) {     
+        if ($form->isValid($this->getRequest()->getParams())) {
             $location = new Model_Location(array(
                 'locationId' => $form->getElement('locationId')->getValue()
               , 'name' => $form->getElement('name')->getValue()
@@ -58,12 +58,12 @@ class Admin_LocationController extends Inventory_Controller_Action
                 $location->insert();
             }
             $success = true;
-            $locationId = $location->getLocationId();      	
+            $locationId = $location->getLocationId();
         }
         $this->_helper->json(array(
             'success' => $success,
             'locationId' => $locationId,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback')); 	
+        ));
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 class UnitController extends Inventory_Controller_Action
-{   
+{
     public function viewAction()
     {
         $success = false;
@@ -25,6 +25,6 @@ class UnitController extends Inventory_Controller_Action
             'success' => $success,
             'units' => $units,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 }

@@ -11,15 +11,15 @@ class Admin_UserController extends Inventory_Controller_Action
             ));
             $getUser->load();
             $user = $getUser->toArray();
-            $success = true;  
+            $success = true;
         }
         $this->_helper->json(array(
             'success' => $success,
             'user' => $user,
-            'errors' => $form->getFormErrors() 
-        ), $this->getRequest()->getParam('callback'));
+            'errors' => $form->getFormErrors()
+        ));
     }
-    
+
     public function viewEmployeeAction()
     {
         $users = new Model_Users();
@@ -33,9 +33,9 @@ class Admin_UserController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => true,
             'users' => $users->toArray()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function viewCustomerAction()
     {
         $form = new Form_AccessLocation($this->getRequesterUserId());
@@ -66,14 +66,14 @@ class Admin_UserController extends Inventory_Controller_Action
             'success' => $success,
             'users' => $users->toArray(),
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function editEmployeeAction()
     {
         $form = new Admin_Form_User($this->getRequesterUserId());
         $success = false;
-        if ($form->isValid($this->getRequest()->getParams())) {     
+        if ($form->isValid($this->getRequest()->getParams())) {
             $user = new Model_User(array(
                 'userId' => $form->getElement('userId')->getValue()
               , 'firstName' => $form->getElement('firstName')->getValue()
@@ -81,7 +81,7 @@ class Admin_UserController extends Inventory_Controller_Action
               , 'email' => $form->getElement('email')->getValue()
               , 'userTypeId' => Model_User::USER_TYPE_EMPLOYEE
               , 'active' => $form->getElement('active')->getValue()
-            
+
             ));
             if(is_numeric($form->getElement('userId')->getValue())) {
                 $user->update();
@@ -89,15 +89,15 @@ class Admin_UserController extends Inventory_Controller_Action
                 $user->insert($user->getTemporaryPassword());
             }
             $success = true;
-            $userId = $user->getUserId();      	
+            $userId = $user->getUserId();
         }
         $this->_helper->json(array(
             'success' => $success,
             'userId' => $userId,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function editCustomerAction()
     {
         $form = new Admin_Form_Customer(
@@ -105,7 +105,7 @@ class Admin_UserController extends Inventory_Controller_Action
             !is_numeric($this->getRequest()->getParam('userId'))
         );
         $success = false;
-        if ($form->isValid($this->getRequest()->getParams())) {     
+        if ($form->isValid($this->getRequest()->getParams())) {
             $user = new Model_User(array(
                 'userId' => $form->getElement('userId')->getValue()
               , 'firstName' => $form->getElement('firstName')->getValue()
@@ -113,7 +113,7 @@ class Admin_UserController extends Inventory_Controller_Action
               , 'email' => $form->getElement('email')->getValue()
               , 'userTypeId' => Model_User::USER_TYPE_CUSTOMER
               , 'active' => $form->getElement('active')->getValue()
-            
+
             ));
             if(is_numeric($form->getElement('userId')->getValue())) {
                 $user->update();
@@ -121,20 +121,20 @@ class Admin_UserController extends Inventory_Controller_Action
                 $user->insert($user->getTemporaryPassword());
                 $userLocation = new Model_UserLocation(array(
                       'userId' => $user->getUserId()
-                    , 'locationId' => $form->getElement('locationId')->getValue()   
+                    , 'locationId' => $form->getElement('locationId')->getValue()
                 ));
                 $userLocation->insert();
             }
             $success = true;
-            $userId = $user->getUserId();      	
+            $userId = $user->getUserId();
         }
         $this->_helper->json(array(
             'success' => $success,
             'userId' => $userId,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function viewUserLocationAction()
     {
         $success = false;
@@ -149,15 +149,15 @@ class Admin_UserController extends Inventory_Controller_Action
                 $getUserLocations->getUserLocations();
             }
             $userLocations = $getUserLocations->toArray();
-            $success = true;  
+            $success = true;
         }
         $this->_helper->json(array(
             'success' => $success,
             'userLocations' => $userLocations,
-            'errors' => $form->getFormErrors() 
-        ), $this->getRequest()->getParam('callback'));
+            'errors' => $form->getFormErrors()
+        ));
     }
-    
+
     public function addUserLocationAction()
     {
         $success = false;
@@ -176,9 +176,9 @@ class Admin_UserController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => $success,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function deleteUserLocationAction()
     {
         $success = false;
@@ -197,6 +197,6 @@ class Admin_UserController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => $success,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 }

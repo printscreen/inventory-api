@@ -10,16 +10,16 @@ class Admin_UnitController extends Inventory_Controller_Action
             	'unitId' => $form->getElement('unitId')->getValue()
             ));
             $getUnit->load();
-            $unit = $getUnit->toArray(); 
+            $unit = $getUnit->toArray();
             $success = true;
         }
         $this->_helper->json(array(
             'success' => $success,
             'unit' => $unit,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function viewUnitByLocationAction()
     {
         $success = false;
@@ -42,9 +42,9 @@ class Admin_UnitController extends Inventory_Controller_Action
             'success' => $success,
             'units' => $units,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function viewUnitByUserAction()
     {
         $success = false;
@@ -68,9 +68,9 @@ class Admin_UnitController extends Inventory_Controller_Action
             'success' => $success,
             'units' => $units,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function editUnitAction()
     {
         $success = false;
@@ -81,7 +81,7 @@ class Admin_UnitController extends Inventory_Controller_Action
               , 'name' => $form->getElement('name')->getValue()
               , 'locationId' => $form->getElement('locationId')->getValue()
               , 'active' => $form->getElement('active')->getValue()
-            ));	                
+            ));
             if(is_numeric($form->getElement('unitId')->getValue())) {
                 $unit->update();
             } else {
@@ -94,9 +94,9 @@ class Admin_UnitController extends Inventory_Controller_Action
             'success' => $success,
             'unitId' => $unitId,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function unitUsersAction()
     {
         $success = false;
@@ -110,16 +110,16 @@ class Admin_UnitController extends Inventory_Controller_Action
               , $this->getRequest()->getParam('offset')
               , $this->getRequest()->getParam('limit')
             );
-            $users = $getUsers->toArray(); 
+            $users = $getUsers->toArray();
             $success = true;
         }
         $this->_helper->json(array(
             'success' => $success,
             'users' => $users,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function unitAvailableUsersAction()
     {
         $success = false;
@@ -132,16 +132,16 @@ class Admin_UnitController extends Inventory_Controller_Action
               , $this->getRequest()->getParam('offset')
               , $this->getRequest()->getParam('limit')
             );
-            $users = $getUsers->toArray(); 
+            $users = $getUsers->toArray();
             $success = true;
         }
         $this->_helper->json(array(
             'success' => $success,
             'users' => $users,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function addUnitUserAction()
     {
         $success = false;
@@ -157,9 +157,9 @@ class Admin_UnitController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => $success,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
-    
+
     public function deleteUnitUserAction()
     {
         $success = false;
@@ -175,6 +175,6 @@ class Admin_UnitController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => $success,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 }

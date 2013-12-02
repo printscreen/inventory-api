@@ -6,10 +6,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 	    defined('INVENTORY_DB') || define('INVENTORY_DB', 'Inventory_Database');
 		defined('TOKEN') || define('TOKEN', 'User_Token');
 		defined('SALT') || define('SALT', 'With_my_last_breath_i_curse_Zoidberg!');
-		defined('TOKEN_CREATION_RETRY_COUNT') || define('TOKEN_CREATION_RETRY_COUNT', 
+		defined('TOKEN_CREATION_RETRY_COUNT') || define('TOKEN_CREATION_RETRY_COUNT',
 		    intval($this->getOption('token_creation_retry_count')));
 	}
-	
+
 	protected function _initAutoload()
 	{
 		$autoLoader = Zend_Loader_Autoloader::getInstance();
@@ -30,12 +30,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
                             ));
 		return $autoLoader;
 	}
-	
+
 	protected function _initApplication()
 	{
 	    date_default_timezone_set($this->getOption('default_time_zone'));
 	}
-	
+
 	protected function _initDb()
 	{
 		$db = $this->getPluginResource('db')->getDbAdapter();
@@ -47,12 +47,5 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
         $frontController = Zend_Controller_Front::getInstance();
         $frontController->registerPlugin(new Inventory_Controller_Plugin_Acl());
-    }
-    
-    protected function _initActionHelpers()
-    {
-        Zend_Controller_Action_HelperBroker::addHelper(
-            new Inventory_Controller_Action_Helper_Json()
-        );
     }
 }

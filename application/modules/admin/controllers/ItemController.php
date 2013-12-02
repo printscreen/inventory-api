@@ -12,7 +12,7 @@ class Admin_ItemController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => true,
             'itemTypes' => $itemTypes->toArray()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function getItemTypeAction()
@@ -27,7 +27,7 @@ class Admin_ItemController extends Inventory_Controller_Action
             'success' => true,
             'itemType' => $itemType->toArray(),
             'canDelete' => $itemType->canDelete()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function editItemTypeAction()
@@ -51,7 +51,7 @@ class Admin_ItemController extends Inventory_Controller_Action
             'success' => $success,
             'itemTypeId' => $itemTypeId,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function deleteItemTypeAction()
@@ -63,7 +63,7 @@ class Admin_ItemController extends Inventory_Controller_Action
 
         $this->_helper->json(array(
             'success' => true
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function viewItemAttributeTypeAction()
@@ -77,7 +77,7 @@ class Admin_ItemController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => true,
             'itemAttributeTypes' => $itemAttributeTypes->toArray()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function viewItemTypeAttributeAction()
@@ -92,7 +92,7 @@ class Admin_ItemController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => true,
             'itemTypeAttributes' => $itemTypeAttributes->toArray()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function getItemTypeAttributeAction()
@@ -105,7 +105,7 @@ class Admin_ItemController extends Inventory_Controller_Action
             'success' => true,
             'canDelete' => $itemTypeAttribute->canDelete(),
             'itemTypeAttribute' => $itemTypeAttribute->toArray()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function editItemTypeAttributeAction()
@@ -128,7 +128,7 @@ class Admin_ItemController extends Inventory_Controller_Action
             'success' => $success,
             'itemTypeAttributeId' => $itemTypeAttributeId,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function deleteItemTypeAttributeAction()
@@ -140,7 +140,7 @@ class Admin_ItemController extends Inventory_Controller_Action
         $this->_helper->json(
         array(
             'success' => true
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function editItemTypeAttributeOrderAction()
@@ -158,7 +158,7 @@ class Admin_ItemController extends Inventory_Controller_Action
         $this->_helper->json(array(
             'success' => $success,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function locationItemTypeAction()
@@ -175,7 +175,7 @@ class Admin_ItemController extends Inventory_Controller_Action
         array(
             'success' => true,
             'itemTypeLocations' => $itemTypeLocations->toArray()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function locationAvailableItemTypeAction()
@@ -191,7 +191,7 @@ class Admin_ItemController extends Inventory_Controller_Action
         array(
             'success' => true,
             'itemTypes' => $itemTypes->toArray()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function addLocationItemTypeAction()
@@ -205,7 +205,7 @@ class Admin_ItemController extends Inventory_Controller_Action
         $this->_helper->json(
         array(
             'success' => true
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function deleteLocationItemTypeAction()
@@ -219,6 +219,6 @@ class Admin_ItemController extends Inventory_Controller_Action
         $this->_helper->json(
         array(
             'success' => true
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 }

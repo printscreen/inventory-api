@@ -43,7 +43,7 @@ class ItemController extends Inventory_Controller_Action
             'filteredItems' => $filteredItems,
             'recentlyModified' => $recentlyModified,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function getItemAction()
@@ -62,7 +62,7 @@ class ItemController extends Inventory_Controller_Action
             'success' => $success,
             'item' => $item,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function editAction()
@@ -99,7 +99,7 @@ class ItemController extends Inventory_Controller_Action
             'success' => $success,
             'itemId' => $itemId,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function deleteAction()
@@ -127,7 +127,7 @@ class ItemController extends Inventory_Controller_Action
             'success' => $success,
             'itemTypes' => $itemTypes,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 
     public function getItemTypeAttributeAction()
@@ -150,6 +150,6 @@ class ItemController extends Inventory_Controller_Action
             'success' => $success,
             'itemTypeAttributes' => $itemTypeAttributes,
             'errors' => $form->getFormErrors()
-        ), $this->getRequest()->getParam('callback'));
+        ));
     }
 }

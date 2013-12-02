@@ -82,6 +82,7 @@ VALUES
 ,   ('default:item:get-location-item-type')
 ,   ('default:item:get-item-type-attribute')
 ,   ('default:item:get-item')
+,   ('default:profile:index')
 ;
 
 CREATE TABLE user_type_resource (
@@ -138,7 +139,8 @@ VALUES
     (39,1),(39,2),(39,3), -- default:item:delete
     (40,1),(40,2),(40,3), -- default:item:get-location-item-type
     (41,1),(41,2),(41,3), -- default:item:get-item-type-attribute
-    (42,1),(42,2),(42,3) -- default:item:get-item
+    (42,1),(42,2),(42,3), -- default:item:get-item
+    (43,1),(43,2),(43,3) -- default:profile:index
 ;
 
 
