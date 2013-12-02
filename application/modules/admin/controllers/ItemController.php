@@ -181,7 +181,7 @@ class Admin_ItemController extends Inventory_Controller_Action
     public function locationAvailableItemTypeAction()
     {
         $itemTypes = new Model_ItemTypes();
-        $itemTypes->getAvailableItemTypesByLocation(
+        $itemTypes->getUnavailableItemTypesByLocation(
             $this->getRequest()->getParam('locationId')
           , $this->getRequest()->getParam('sort')
           , $this->getRequest()->getParam('offset')
