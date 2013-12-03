@@ -138,6 +138,11 @@ class Admin_UserController extends Inventory_Controller_Action
     public function viewUserLocationAction()
     {
         $success = false;
+        $this->getRequest()->setParam('userId',
+            is_numeric($this->getRequest()->getParam('userId')) ?
+            $this->getRequest()->getParam('userId') :
+            $this->getRequesterUserId()
+        );
         $form = new Form_AccessUser($this->getRequesterUserId());
         if($form->isValid($this->getRequest()->getParams())) {
             $getUserLocations = new Model_UserLocations(array(
