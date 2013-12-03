@@ -83,6 +83,7 @@ VALUES
 ,   ('default:item:get-item-type-attribute')
 ,   ('default:item:get-item')
 ,   ('default:profile:index')
+,   ('default:profile:reset-password')
 ;
 
 CREATE TABLE user_type_resource (
