@@ -170,6 +170,31 @@ class Model_User extends Model_Base_Db
 		return true;
 	}
 
+	public function updatePassword($password)
+	{
+		if(trim($password) == '' || !is_numeric($this->_userId)) {
+	        throw new Zend_Exception('No user id or password supplied');
+	    }
+	    $sql = "UPDATE users SET
+	    		    password = :password
+	    		  WHERE user_id = :userId;
+	    		";
+	    $query = $this->_db->prepare($sql);
+
+	    $password = $this->hashPassword($password);
+	    $userId = $this->convertToInt($this->_userId);
+
+	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
+	    $query->bindParam(':password', $password, PDO::PARAM_STR);
+
+		$result = $query->execute();
+
+		if(!$result) {
+			return false;
+		}
+		return true;
+	}
+
 	public static function hashPassword($password)
 	{
 	    if(empty($password)) {
