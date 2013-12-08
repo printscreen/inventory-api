@@ -5,7 +5,7 @@ class Inventory_Form extends Zend_Form
     {
         parent::__construct($options);
     }
-    
+
     public function getFormErrors()
     {
         $errors = array();
@@ -14,7 +14,7 @@ class Inventory_Form extends Zend_Form
                 if($val->hasErrors()) {
                     $errors[$key] = current($val->getMessages());
                 }
-            }  
+            }
         }
         return $errors;
     }

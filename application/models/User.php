@@ -239,6 +239,25 @@ class Model_User extends Model_Base_Db
 		return current($result)->password == self::hashPassword(self::getTemporaryPassword());
 	}
 
+	public function getResetPasswordToken()
+	{
+		if(!$this->_userId && !$this->load()) {
+			throw new Zend_Exception('Unable to find user');
+		}
+
+		$sql = "SELECT md5(CONCAT(user_id,password,email)) AS token
+				FROM users
+				WHERE user_id = :userId";
+	    $query = $this->_db->prepare($sql);
+
+	    $userId = $this->convertToInt($this->_userId);
+	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
+		$query->execute();
+		$result = $query->fetchAll();
+
+		return current($result)->token;
+	}
+
 	public function canEditUser($userToEditUserId)
 	{
 	    // Case 1: Employees can not access other employees

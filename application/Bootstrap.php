@@ -8,6 +8,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 		defined('SALT') || define('SALT', 'With_my_last_breath_i_curse_Zoidberg!');
 		defined('TOKEN_CREATION_RETRY_COUNT') || define('TOKEN_CREATION_RETRY_COUNT',
 		    intval($this->getOption('token_creation_retry_count')));
+        defined('SYSTEM_NAME') || define('SYSTEM_NAME', 'System_Name');
+        defined('SYSTEM_EMAIL_ADDRESS') || define('SYSTEM_EMAIL_ADDRESS', 'System_Email_Address');
+        defined('SYSTEM_MAILER') || define('SYSTEM_MAILER', 'System_Emailer_Object');
 	}
 
 	protected function _initAutoload()
@@ -34,6 +37,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 	protected function _initApplication()
 	{
 	    date_default_timezone_set($this->getOption('default_time_zone'));
+        Zend_Registry::set(SYSTEM_NAME, $this->getOption('application_name'));
 	}
 
 	protected function _initDb()
@@ -47,5 +51,20 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
         $frontController = Zend_Controller_Front::getInstance();
         $frontController->registerPlugin(new Inventory_Controller_Plugin_Acl());
+    }
+
+    protected function _initMailTransport()
+    {
+        $options = $this->getOption('mail');
+        Zend_Registry::set(SYSTEM_EMAIL_ADDRESS, $options['system_address']);
+        $mailer = new Zend_Mail_Transport_Smtp($options['server'], array(
+                        'ssl' => 'tls',
+                        'port' => 587,
+                        'auth' => 'login',
+                        'username' => $options['user_name'],
+                        'password' => $options['password']
+            )
+        );
+        Zend_Registry::set(SYSTEM_MAILER,$mailer);
     }
 }

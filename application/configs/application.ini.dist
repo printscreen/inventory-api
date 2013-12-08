@@ -12,10 +12,17 @@ resources.frontController.controllerDirectory = APPLICATION_PATH "/controllers"
 resources.frontController.params.displayExceptions = 0
 resources.db.adapter = ""
 resources.db.params.host = ""
-resources.db.params.port = 
+resources.db.params.port =
 resources.db.params.dbname = ""
 resources.db.params.username = ""
 resources.db.params.password = ""
+
+application_name = ""
+
+mail.system_address = ""
+mail.server = ""
+mail.user_name = ""
+mail.password = ""
 
 default_time_zone = "America/Los_Angeles"
 
@@ -41,6 +48,6 @@ site.ssl = "off";
 resources.db.params.dbname = ""
 resources.db.params.host = ""
 resources.db.adapter = ""
-resources.db.params.port = 
+resources.db.params.port =
 resources.db.params.username = ""
 resources.db.params.password = ""
