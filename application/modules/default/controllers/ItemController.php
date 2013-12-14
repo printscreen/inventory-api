@@ -28,7 +28,7 @@ class ItemController extends Inventory_Controller_Action
             $getItems->getUserItemsInUnit(
                 $this->getRequesterUserId()
               , $form->getElement('unitId')->getValue()
-              , $this->getRequest()->getParam('itemTypeId')
+              , null
               , $sortByLastModified = -11
               , $offset = 0
               , $limit = 3
