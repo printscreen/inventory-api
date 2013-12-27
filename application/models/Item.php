@@ -12,6 +12,7 @@ class Model_Item extends Model_Base_Db
     protected $_location;
     protected $_attribute;
     protected $_count;
+    protected $_itemImageId;
     protected $_total;
 
     public function __construct(array $options = array())
@@ -53,6 +54,7 @@ class Model_Item extends Model_Base_Db
         $this->_location = $record->location;
         $this->_attribute = $record->attribute;
         $this->_count = $record->count;
+        $this->_itemImageId = $record->item_image_id;
         $this->_total = $record->total;
     }
 
@@ -65,7 +67,7 @@ class Model_Item extends Model_Base_Db
             $binds[':itemId'] = array('value' => $this->_itemId, 'type' => PDO::PARAM_INT);
         } else if (is_numeric($userId) && !empty($this->_name)) {
             $where = ' INNER JOIN user_unit uu ON i.user_unit_id = uu.user_unit_id ' .
-                     $where . ' AND LOWER(i.name) = :name AND uu.user_id = :userId ';
+            $where . 'WHERE true AND LOWER(i.name) = :name AND uu.user_id = :userId ';
             $binds[':name'] = array('value' => strtolower(trim($this->_name)), 'type' => PDO::PARAM_STR);
             $binds[':userId'] = array('value' => $userId, 'type' => PDO::PARAM_INT);
         } else {
@@ -84,9 +86,11 @@ class Model_Item extends Model_Base_Db
               , i.location
               , i.attribute
               , i.count
+              , ii.item_image_id
               , 1 AS total
             FROM item i
             INNER JOIN item_type it ON i.item_type_id = it.item_type_id
+            LEFT JOIN item_image ii ON i.item_id = ii.item_id AND ii.default_image AND is_thumbnail
              $where LIMIT 1
         ";
 
@@ -198,7 +202,7 @@ class Model_Item extends Model_Base_Db
     public function delete()
     {
         if(!$this->load()) {
-            throw new Zend_Exception('No user unit found to delete');
+            throw new Zend_Exception('No item to delete');
         }
         $itemId = $this->convertToInt($this->_itemId);
 
@@ -238,7 +242,7 @@ class Model_Item extends Model_Base_Db
         $query->bindParam(':userId', $userId, PDO::PARAM_INT);
         $query->bindParam(':itemId', $itemId, PDO::PARAM_INT);
 
-        $query->execute($binds);
+        $query->execute();
         $result = $query->fetch();
         return (bool)$result->can_edit;
     }
@@ -265,5 +269,6 @@ class Model_Item extends Model_Base_Db
     public function getLocation(){return $this->_location;}
     public function getAttribute(){return $this->_attribute;}
     public function getCount(){return $this->_count;}
+    public function getItemImageId(){return $this->_itemImageId;}
     public function getTotal(){return $this->_total;}
 }

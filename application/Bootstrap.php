@@ -11,6 +11,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         defined('SYSTEM_NAME') || define('SYSTEM_NAME', 'System_Name');
         defined('SYSTEM_EMAIL_ADDRESS') || define('SYSTEM_EMAIL_ADDRESS', 'System_Email_Address');
         defined('SYSTEM_MAILER') || define('SYSTEM_MAILER', 'System_Emailer_Object');
+        defined('IMAGE_FILE_PATH') || define('IMAGE_FILE_PATH', 'Image_File_Path');
 	}
 
 	protected function _initAutoload()
@@ -38,6 +39,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 	{
 	    date_default_timezone_set($this->getOption('default_time_zone'));
         Zend_Registry::set(SYSTEM_NAME, $this->getOption('application_name'));
+        Zend_Registry::set(IMAGE_FILE_PATH, $this->getOption('image_file_path'));
 	}
 
 	protected function _initDb()

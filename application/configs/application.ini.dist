@@ -35,6 +35,7 @@ resources.frontController.defaultModule = "default"
 resources.view.encoding = "UTF-8"
 
 token_creation_retry_count = 5
+image_file_path = ""
 
 [staging : production]
 

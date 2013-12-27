@@ -29,6 +29,7 @@ class Model_Items extends Model_Base_Db
               , i.attribute
               , i.count
               , i.last_modified
+              , ii.item_image_id
               , ( SELECT
                     count(*)
                     FROM item i
@@ -39,6 +40,7 @@ class Model_Items extends Model_Base_Db
             FROM item i
             INNER JOIN item_type it ON i.item_type_id = it.item_type_id
             INNER JOIN user_unit uu ON i.user_unit_id = uu.user_unit_id
+            LEFT JOIN item_image ii ON i.item_id = ii.item_id AND ii.default_image AND is_thumbnail
             WHERE uu.user_id = :userId AND uu.unit_id = :unitId
             " . (is_numeric($itemTypeId) ? 'AND i.item_type_id = :itemTypeId ' : '') . "
             ORDER BY :sort " . $this->getDirection($sort) . "
@@ -78,7 +80,7 @@ class Model_Items extends Model_Base_Db
 
     public function toArray()
     {
-        $users = array();
+        $items = array();
         if(is_array($this->_items) && count($this->_items) > 0) {
             foreach($this->_items as $item) {
                 $items[] = $item->toArray();

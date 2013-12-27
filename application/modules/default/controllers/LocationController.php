@@ -9,7 +9,7 @@ class LocationController extends Inventory_Controller_Action
         ));
         $locations->getUserLocations();
         $this->_helper->json(array(
-            'success' => $success,
+            'success' => true,
             'userLocations' => $locations->toArray()
         ));
     }

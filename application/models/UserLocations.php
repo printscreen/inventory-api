@@ -8,6 +8,7 @@ class Model_UserLocations extends Model_Base_Db
 	{
 		$settings = array_merge(array(
             'userId' => null,
+            'locationIds' => null,
             'db' => null,
             ), $options);
 

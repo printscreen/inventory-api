@@ -81,14 +81,13 @@ class Model_UserLocation extends Model_Base_Db
 
 	    $userId = $this->convertToInt($this->_userId);
 
-	    $userToEditUserId = $this->convertToInt($userToEditUserId);
 	    $query = $this->_db->prepare($sql);
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
 	    foreach($locationIds as $locationId) {
 	        $query->bindParam(':'.$locationId, $locationId, PDO::PARAM_INT);
 	    }
 
-	    $query->execute($binds);
+	    $query->execute();
 	    $result = $query->fetch();
 	    return (bool)$result->can_edit;
 	}

@@ -84,6 +84,11 @@ VALUES
 ,   ('default:item:get-item')
 ,   ('default:profile:index')
 ,   ('default:profile:reset-password')
+,   ('default:image:get')
+,   ('default:image:view')
+,   ('default:image:add')
+,   ('default:image:delete')
+,   ('default:image:make-default')
 ;
 
 CREATE TABLE user_type_resource (
@@ -142,7 +147,12 @@ VALUES
     (41,1),(41,2),(41,3), -- default:item:get-item-type-attribute
     (42,1),(42,2),(42,3), -- default:item:get-item
     (43,1),(43,2),(43,3), -- default:profile:index
-    (44,1),(44,2),(44,3) -- default:profile:reset-password
+    (44,1),(44,2),(44,3), -- default:profile:reset-password
+    (45,1),(45,2),(45,3), -- default:image:get
+    (46,1),(46,2),(46,3), -- default:image:view
+    (47,1),(47,2),(47,3), -- default:image:add
+    (48,1),(48,2),(48,3), -- default:image:delete
+    (49,1),(49,2),(49,3) -- default:image:make-default
 ;
 
 
@@ -249,6 +259,21 @@ CREATE TABLE item (
     FOREIGN KEY (item_type_id) REFERENCES item_type(item_type_id),
     FOREIGN KEY (user_unit_id) REFERENCES user_unit(user_unit_id),
     UNIQUE KEY item_id_name (item_id, name)
+);
+
+CREATE TABLE item_image (
+    item_image_id   INT(10)         NOT NULL auto_increment,
+    item_id         INT(10)         NOT NULL,
+    user_id         INT(10)         NOT NULL,
+    lat             FLOAT           NULL,
+    lon             FLOAT           NULL,
+    insert_ts       TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    default_image   BOOLEAN         NULL DEFAULT NULL,
+    is_thumbnail    BOOLEAN         NULL DEFAULT false,
+    PRIMARY KEY (item_image_id),
+    FOREIGN KEY (item_id) REFERENCES item(item_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    UNIQUE KEY item_id_default (item_id, default_image)
 );
 
 COMMIT;

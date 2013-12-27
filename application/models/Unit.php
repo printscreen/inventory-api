@@ -6,7 +6,7 @@ class Model_Unit extends Model_Base_Db
 	protected $_locationId;
 	protected $_active;
 	protected $_total;
-	
+
 	public function __construct(array $options = array())
 	{
 	    $settings = array_merge(array(
@@ -22,21 +22,21 @@ class Model_Unit extends Model_Base_Db
 		$this->_locationId = $settings['locationId'];
 		$this->_active = $settings['active'];
 	}
-	
+
 	public function isActive()
 	{
 		return $this->_active;
 	}
-	
+
 	public function loadRecord($record)
-	{		
+	{
 		$this->_unitId = $record->unit_id;
 		$this->_name = $record->name;
 		$this->_locationId = $record->location_id;
 		$this->_active = $record->active;
-		$this->_total = $record->total;		
+		$this->_total = $record->total;
 	}
-	
+
 	public function load()
 	{
 	    $where = 'WHERE true';
@@ -51,7 +51,7 @@ class Model_Unit extends Model_Base_Db
 		} else {
 			throw new Zend_Exception("No unit id supplied");
 		}
-	    
+
 	    $sql = "
 			SELECT
 			  	unit_id
@@ -68,11 +68,11 @@ class Model_Unit extends Model_Base_Db
 		if(!$result || count($result) != 1) {
 			return false;
 		}
-		
+
 		$this->loadRecord($result[0]);
 		return true;
 	}
-		
+
 	public function insert()
 	{
 	    $sql = "INSERT INTO unit (
@@ -86,24 +86,24 @@ class Model_Unit extends Model_Base_Db
 	    		  , :active
 	    		)";
 	    $query = $this->_db->prepare($sql);
-	    
+
 	    $active = $this->convertFromBoolean($this->_active);
 	    $locationId = $this->convertToInt($this->_locationId);
-	    
+
 	    $query->bindParam(':name', $this->_name, PDO::PARAM_STR);
 	    $query->bindParam(':locationId', $locationId, PDO::PARAM_INT);
 	    $query->bindParam(':active', $active, PDO::PARAM_BOOL);
-	    
+
 		$result = $query->execute();
-		
+
 		if(!$result) {
 			return false;
 		}
 		$this->_unitId = $this->_db->lastInsertId('unit','unit_id');
-		
+
 		return true;
 	}
-	
+
 	public function update()
 	{
 	    if(empty($this->_unitId) || !is_numeric($this->_unitId)) {
@@ -120,20 +120,20 @@ class Model_Unit extends Model_Base_Db
 	    $unitId = $this->convertToInt($this->_unitId);
 	    $locationId = $this->convertToInt($this->_locationId);
 	    $active = $this->convertFromBoolean($this->_active);
-	    
+
 	    $query->bindParam(':unitId', $unitId, PDO::PARAM_INT);
 	    $query->bindParam(':name', $this->_name, PDO::PARAM_STR);
 	    $query->bindParam(':locationId', $locationId, PDO::PARAM_INT);
 	    $query->bindParam(':active', $active, PDO::PARAM_BOOL);
 
 		$result = $query->execute();
-		
+
 		if(!$result) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	public function canEditUnit($userId)
 	{
 	    if(empty($this->_unitId) || !is_numeric($this->_unitId)) {
@@ -146,7 +146,7 @@ class Model_Unit extends Model_Base_Db
 	    	 		SELECT location_id
 	    	 		FROM user_location
 	    	 		WHERE user_id = :userId
-	    	 	)x 
+	    	 	)x
 	    	 	INNER JOIN unit u ON x.location_id = u.location_id
 	    	 	WHERE u.unit_id = :unitId
 	    	),
@@ -160,17 +160,17 @@ class Model_Unit extends Model_Base_Db
 	    $query = $this->_db->prepare($sql);
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
         $query->bindParam(':unitId', $unitId, PDO::PARAM_INT);
-	    $query->execute($binds);
+	    $query->execute();
 	    $result = $query->fetch();
 	    return (bool)$result->can_edit;
 	}
-	
+
 	//Setters
 	public function setUnitId($unitId){$this->_unitId = $unitId; return $this;}
 	public function setName($name){$this->_name = $name; return $this;}
     public function setLocationId($locationId){$this->_locationId = $locationId; return $this;}
 	public function setActive($active){$this->_active = $active; return $this;}
-	
+
 	//Getters
 	public function getUnitId(){return $this->_unitId;}
 	public function getName(){return $this->_name;}
