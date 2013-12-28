@@ -150,7 +150,7 @@ class Model_Image extends Model_Base_Db
         $image->load($imagePath);
 
         if($this->_isThumbnail) {
-            $image->shrinkToSize(
+            $image->createThumbnail(
                 self::MAX_THUMBNAIL_WIDTH,
                 self::MAX_THUMBNAIL_HEIGHT
             );

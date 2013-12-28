@@ -3,16 +3,22 @@ class Inventory_Image
 {
      private $image;
      private $imageType;
+     private $width;
+     private $height;
 
      public function load($filename)
      {
          $imageInfo = getimagesize($filename);
-         $this->image_type = $imageInfo[2];
-         if( $this->image_type == IMAGETYPE_JPEG ) {
+
+         $this->width = $imageInfo[0];
+         $this->height = $imageInfo[1];
+         $this->imageType = $imageInfo[2];
+
+         if( $this->imageType == IMAGETYPE_JPEG ) {
              $this->image = imagecreatefromjpeg($filename);
-         } elseif( $this->image_type == IMAGETYPE_GIF ) {
+         } elseif( $this->imageType == IMAGETYPE_GIF ) {
              $this->image = imagecreatefromgif($filename);
-         } elseif( $this->image_type == IMAGETYPE_PNG ) {
+         } elseif( $this->imageType == IMAGETYPE_PNG ) {
              $this->image = imagecreatefrompng($filename);
          }
      }
@@ -99,6 +105,33 @@ class Inventory_Image
          }
      }
 
+     public function createThumbnail($thumbnailWidth = 100, $thumbnailHeight = 225)
+     {
+        $oldWidth = $this->width / $thumbnailWidth;
+        $oldHeight = $this->height / $thumbnailHeight;
+
+        $newWidth = round($this->width / max($oldWidth, $oldHeight), 0);
+        $newHeight = round($this->height / max($oldHeight, $oldWidth), 0);
+
+        $newImage = imagecreatetruecolor($thumbnailWidth, $thumbnailHeight);
+        $background = imagecolorallocate($newImage, 255, 255, 255);
+        imagefill($newImage, 0, 0, $background);
+
+        imagecopyresampled(
+            $newImage
+          , $this->image
+          , ($thumbnailWidth - $newWidth) / 2
+          , ($thumbnailHeight - $newHeight) / 2
+          , 0
+          , 0
+          , $newWidth
+          , $newHeight
+          , $this->width
+          , $this->height
+        );
+        $this->image = $newImage;
+    }
+
      public function scale($scale)
      {
          $width = $this->getWidth() * $scale/100;
@@ -113,9 +146,9 @@ class Inventory_Image
 
      public function resize($width, $height, $x = 0, $y = 0, $sourceWidth = null, $sourceHeight = null)
      {
-         $new_image = imagecreatetruecolor($width, $height);
+         $newImage = imagecreatetruecolor($width, $height);
          imagecopyresampled(
-               $new_image
+               $newImage
              , $this->image
              , 0
              , 0
@@ -126,6 +159,6 @@ class Inventory_Image
              , is_null($sourceWidth) ? $this->getWidth() : $sourceWidth
              , is_null($sourceHeight) ? $this->getHeight() : $sourceHeight
          );
-         $this->image = $new_image;
+         $this->image = $newImage;
      }
 }
