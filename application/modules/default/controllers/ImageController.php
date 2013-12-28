@@ -69,10 +69,15 @@ class ImageController extends Inventory_Controller_Action
             $thumbnail->insert(
                 $form->getElement('image')->getFileName()
             );
+            $img = $image->toArray();
+            $thumb = $thumbnail->toArray();
             $success = true;
+
         }
         $this->_helper->json(array(
             'success' => $success,
+            'image' => $img,
+            'thumbnail' => $thumb,
             'errors' => $form->getFormErrors()
         ));
     }
