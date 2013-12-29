@@ -99,7 +99,7 @@ class Model_UserUnit extends Model_Base_Db
 	    $query = $this->_db->prepare($sql);
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
 	    $query->bindParam(':unitId', $unitId, PDO::PARAM_INT);
-	    $query->execute();
+	    $result = $query->execute();
 
 		if(!$result) {
 			return false;

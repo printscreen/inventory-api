@@ -289,7 +289,7 @@ class Model_User extends Model_Base_Db
 	    $query = $this->_db->prepare($sql);
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
 	    $query->bindParam(':userToEditUserId', $userToEditUserId, PDO::PARAM_INT);
-	    $query->execute($binds);
+	    $query->execute();
 	    $result = $query->fetch();
 	    return (bool)$result->can_edit;
 	}
