@@ -269,10 +269,11 @@ CREATE TABLE item_image (
     lon             FLOAT           NULL,
     insert_ts       TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     default_image   BOOLEAN         NULL DEFAULT NULL,
-    is_thumbnail    BOOLEAN         NULL DEFAULT false,
+    thumbnail       INT(10)         NULL UNIQUE,
     PRIMARY KEY (item_image_id),
     FOREIGN KEY (item_id) REFERENCES item(item_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (thumbnail) REFERENCES item_image(item_image_id) ON DELETE CASCADE,
     UNIQUE KEY item_id_default (item_id, default_image)
 );
 

@@ -24,7 +24,7 @@ class Model_Items extends Model_Base_Db
               , i.user_unit_id
               , i.location_id
               , i.name
-              , i. description
+              , i.description
               , i.location
               , i.attribute
               , i.count
@@ -40,7 +40,7 @@ class Model_Items extends Model_Base_Db
             FROM item i
             INNER JOIN item_type it ON i.item_type_id = it.item_type_id
             INNER JOIN user_unit uu ON i.user_unit_id = uu.user_unit_id
-            LEFT JOIN item_image ii ON i.item_id = ii.item_id AND ii.default_image AND is_thumbnail
+            LEFT JOIN item_image ii ON i.item_id = ii.item_id AND ii.default_image AND thumbnail IS NULL
             WHERE uu.user_id = :userId AND uu.unit_id = :unitId
             " . (is_numeric($itemTypeId) ? 'AND i.item_type_id = :itemTypeId ' : '') . "
             ORDER BY :sort " . $this->getDirection($sort) . "

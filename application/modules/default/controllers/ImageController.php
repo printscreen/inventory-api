@@ -53,22 +53,24 @@ class ImageController extends Inventory_Controller_Action
         $success = false;
         $form = new Form_ItemImage($this->getRequesterUserId());
         if($form->isValid($this->getRequest()->getParams())) {
-            $image = new Model_Image(array(
-                'itemId' => $form->getElement('itemId')->getValue(),
-                'userId' => $this->getRequesterUserId()
-            ));
-            $image->insert(
-                $form->getElement('image')->getFileName()
-            );
-
             $thumbnail = new Model_Image(array(
                 'itemId' => $form->getElement('itemId')->getValue()
               , 'userId' => $this->getRequesterUserId()
-              , 'isThumbnail' => true
             ));
             $thumbnail->insert(
                 $form->getElement('image')->getFileName()
             );
+
+            $image = new Model_Image(array(
+                'itemId' => $form->getElement('itemId')->getValue()
+              , 'userId' => $this->getRequesterUserId()
+              , 'thumbnail' => $thumbnail->getItemImageId()
+            ));
+
+            $image->insert(
+                $form->getElement('image')->getFileName()
+            );
+
             $img = $image->toArray();
             $thumb = $thumbnail->toArray();
             $success = true;
@@ -107,6 +109,16 @@ class ImageController extends Inventory_Controller_Action
             $image = new Model_Image(array(
                 'itemImageId' => $form->getElement('itemImageId')->getValue()
             ));
+            $image->load();
+
+            //If passed the thumbnail, find the parent image
+            if(!is_numeric($image->getThumbnail())) {
+                $image = new Model_Image(array(
+                    'thumbnail' => $form->getElement('itemImageId')->getValue()
+                ));
+                $image->load();
+            }
+
             $success = $image->delete();
         }
         $this->_helper->json(array(

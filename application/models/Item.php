@@ -90,7 +90,7 @@ class Model_Item extends Model_Base_Db
               , 1 AS total
             FROM item i
             INNER JOIN item_type it ON i.item_type_id = it.item_type_id
-            LEFT JOIN item_image ii ON i.item_id = ii.item_id AND ii.default_image AND is_thumbnail
+            LEFT JOIN item_image ii ON i.item_id = ii.item_id AND ii.default_image AND thumbnail IS NULL
              $where LIMIT 1
         ";
 

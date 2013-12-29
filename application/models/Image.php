@@ -16,7 +16,7 @@ class Model_Image extends Model_Base_Db
     protected $_lon;
     protected $_insertTs;
     protected $_defaultImage;
-    protected $_isThumbnail;
+    protected $_thumbnail;
     protected $_total;
 
     public function __construct(array $options = array())
@@ -28,7 +28,7 @@ class Model_Image extends Model_Base_Db
             'lat' => null,
             'lon' => null,
             'defaultImage' => null,
-            'isThumbnail' => null,
+            'thumbnail' => null,
             'imageFileBasePath' => Zend_Registry::get(IMAGE_FILE_PATH),
             'db' => null,
             ), $options);
@@ -40,7 +40,7 @@ class Model_Image extends Model_Base_Db
         $this->_lat = $settings['lat'];
         $this->_lon = $settings['lon'];
         $this->_defaultImage = $settings['defaultImage'];
-        $this->_isThumbnail = $settings['isThumbnail'];
+        $this->_thumbnail = $settings['thumbnail'];
         $this->_imageFileBasePath = $settings['imageFileBasePath'];
     }
 
@@ -53,7 +53,7 @@ class Model_Image extends Model_Base_Db
         $this->_lon = $record->lon;
         $this->_insertTs = $record->insert_ts;
         $this->_defaultImage = $record->default_image;
-        $this->_isThumbnail = $record->is_thumbnail;
+        $this->_thumbnail = $record->thumbnail;
         $this->_total = $record->total;
     }
 
@@ -64,6 +64,9 @@ class Model_Image extends Model_Base_Db
         if(!empty($this->_itemImageId) && is_numeric($this->_itemImageId)) {
             $where .= ' AND ii.item_image_id = :itemImageId';
             $binds[':itemImageId'] = array('value' => $this->_itemImageId, 'type' => PDO::PARAM_INT);
+        } else if (is_numeric($this->_thumbnail)) {
+            $where .= ' AND ii.thumbnail = :thumbnail';
+            $binds[':thumbnail'] = array('value' => $this->_thumbnail, 'type' => PDO::PARAM_INT);
         } else {
             throw new Zend_Exception("No item image id supplied");
         }
@@ -77,7 +80,7 @@ class Model_Image extends Model_Base_Db
               , ii.lon
               , ii.insert_ts
               , ii.default_image
-              , ii.is_thumbnail
+              , ii.thumbnail
               , 1 AS total
             FROM item_image ii
              $where LIMIT 1
@@ -104,7 +107,7 @@ class Model_Image extends Model_Base_Db
                   , lat
                   , lon
                   , default_image
-                  , is_thumbnail
+                  , thumbnail
                 )
                 SELECT
                     :itemId
@@ -113,7 +116,7 @@ class Model_Image extends Model_Base_Db
                   , CAST(:lon AS DECIMAL)
                   , COALESCE(:defaultImage, (
                         SELECT CASE
-                            WHEN COALESCE(:isThumbnail, false) AND count(*) < 1
+                            WHEN COALESCE(:thumbnail) IS NULL AND count(*) < 1
                                 THEN true
                             ELSE null
                             END
@@ -121,7 +124,7 @@ class Model_Image extends Model_Base_Db
                         WHERE item_id = :itemId
                         AND default_image
                     ))
-                  , :isThumbnail
+                  , :thumbnail
                 ";
 
         $query = $this->_db->prepare($sql);
@@ -129,14 +132,14 @@ class Model_Image extends Model_Base_Db
         $itemId = $this->convertToInt($this->_itemId);
         $userId = $this->convertToInt($this->_userId);
         $defaultImage = $this->convertFromBoolean($this->_defaultImage);
-        $isThumbnail = $this->convertFromBoolean($this->_isThumbnail);
+        $thumbnail = $this->convertToInt($this->_thumbnail);
 
         $query->bindParam(':itemId', $itemId, PDO::PARAM_INT);
         $query->bindParam(':userId', $this->_userId , PDO::PARAM_INT);
         $query->bindParam(':lat', $this->_lat , PDO::PARAM_STR);
         $query->bindParam(':lon', $this->_lon , PDO::PARAM_STR);
         $query->bindParam(':defaultImage', $defaultImage, PDO::PARAM_BOOL);
-        $query->bindParam(':isThumbnail', $isThumbnail, PDO::PARAM_BOOL);
+        $query->bindParam(':thumbnail', $thumbnail, PDO::PARAM_INT);
 
         $result = $query->execute();
 
@@ -149,7 +152,7 @@ class Model_Image extends Model_Base_Db
         $image = new Inventory_Image();
         $image->load($imagePath);
 
-        if($this->_isThumbnail) {
+        if(!is_numeric($this->_thumbnail)) {
             $image->createThumbnail(
                 self::MAX_THUMBNAIL_WIDTH,
                 self::MAX_THUMBNAIL_HEIGHT
@@ -160,7 +163,7 @@ class Model_Image extends Model_Base_Db
                 self::MAX_HEIGHT
             );
         }
-        $image->save($this->_getFilepath());
+        $image->save($this->_getFilepath($this->_itemImageId));
 
         return true;
     }
@@ -175,7 +178,7 @@ class Model_Image extends Model_Base_Db
         $itemId = $this->convertToInt($this->_itemId);
         $userId = $this->convertToInt($this->_userId);
         $defaultImage = $this->convertFromBoolean($this->_defaultImage);
-        $isThumbnail = $this->convertFromBoolean($this->_isThumbnail);
+        $thumbnail = $this->convertToInt($this->_thumbnail);
 
         //Clear out default taken by other ids first
         //Because of unique constraint
@@ -184,7 +187,7 @@ class Model_Image extends Model_Base_Db
                     INNER JOIN item_image ii ON i.item_id = ii.item_id
                     AND ii.item_image_id = :itemImageId
                     SET i.default_image = null
-                    WHERE i.is_thumbnail AND i.item_id = ii.item_id";
+                    WHERE i.thumbnail IS NULL AND i.item_id = ii.item_id";
             $query = $this->_db->prepare($sql);
             $query->bindParam(':itemImageId', $itemImageId, PDO::PARAM_INT);
             $query->execute();
@@ -196,7 +199,7 @@ class Model_Image extends Model_Base_Db
                   , lat = COALESCE(CAST(:lat AS DECIMAL), lat)
                   , lon = COALESCE(CAST(:lon AS DECIMAL), lon)
                   , default_image = COALESCE(:defaultImage, default_image)
-                  , is_thumbnail = COALESCE(:isThumbnail, is_thumbnail)
+                  , thumbnail = COALESCE(:thumbnail, thumbnail)
                   WHERE item_image_id = :itemImageId;
                 ";
 
@@ -208,7 +211,7 @@ class Model_Image extends Model_Base_Db
         $query->bindParam(':lat', $this->_lat , PDO::PARAM_STR);
         $query->bindParam(':lon', $this->_lon , PDO::PARAM_STR);
         $query->bindParam(':defaultImage', $defaultImage, PDO::PARAM_BOOL);
-        $query->bindParam(':isThumbnail', $isThumbnail, PDO::PARAM_BOOL);
+        $query->bindParam(':thumbnail', $thumbnail, PDO::PARAM_INT);
         $result = $query->execute();
 
         if(!$result) {
@@ -222,18 +225,58 @@ class Model_Image extends Model_Base_Db
         if(!$this->load()) {
             throw new Zend_Exception('No image found to delete');
         }
-        $itemImageId = $this->convertToInt($this->_itemImageId);
 
-        $sql = 'DELETE FROM item_image WHERE item_image_id = :itemImageId LIMIT 1';
+        if(!is_numeric($this->_thumbnail)) {
+            throw new Zend_Exception('You can not delete the thumbnail');
+        }
+
+        $itemImageId = $this->convertToInt($this->_itemImageId);
+        $thumbnail = $this->convertToInt($this->_thumbnail);
+
+        $sql = 'DELETE FROM item_image
+                WHERE item_image_id = :itemImageId
+                OR item_image_id = :thumbnail';
         $query = $this->_db->prepare($sql);
+
         $query->bindParam(':itemImageId', $itemImageId, PDO::PARAM_INT);
+        $query->bindParam(':thumbnail', $thumbnail, PDO::PARAM_INT);
         $result = $query->execute();
+
+        //If this was the default image, assign another image the default
+        $sql = 'UPDATE item_image i
+                INNER JOIN (
+                    SELECT *
+                    FROM item_image ii
+                    WHERE item_image_id != :thumbnail
+                    AND thumbnail IS NULL
+                    LIMIT 1
+                )ii
+                ON i.item_image_id = ii.item_image_id
+                LEFT JOIN (
+                    SELECT *
+                    FROM item_image ii
+                    WHERE item_image_id = :thumbnail
+                )x
+                ON x.item_id = i.item_id
+                SET i.default_image = true
+                WHERE i.item_id = :itemId
+                AND x.item_image_id IS NULL
+                AND i.thumbnail IS NULL';
+
+        $query = $this->_db->prepare($sql);
+        $itemId = $this->convertToInt($this->_itemId);
+        $thumbnail = $this->convertToInt($this->_thumbnail);
+        $query->bindParam(':itemId', $itemId, PDO::PARAM_INT);
+        $query->bindParam(':thumbnail', $thumbnail, PDO::PARAM_INT);
+        $query->execute();
+
 
         if(!$result) {
             return false;
         }
 
-        unlink($this->_getFilepath());
+        unlink($this->_getFilepath($this->_itemImageId));
+        unlink($this->_getFilepath($this->_thumbnail));
 
         return true;
     }
@@ -275,10 +318,10 @@ class Model_Image extends Model_Base_Db
         if(!is_numeric($this->_itemImageId)) {
             throw new Zend_Exception('You must provide an item image id');
         }
-        return file_get_contents($this->_getFilepath());
+        return file_get_contents($this->_getFilepath($this->_itemImageId));
     }
 
-    private function _getFilepath()
+    private function _getFilepath($id)
     {
         $year = date('Y', strtotime($this->_insertTs));
         $month = date('m', strtotime($this->_insertTs));
@@ -296,7 +339,7 @@ class Model_Image extends Model_Base_Db
         if (!file_exists($path)) {
             mkdir($path);
         }
-        return $path . $this->_itemImageId . '.jpg';
+        return $path . $id . '.jpg';
     }
 
     //Setters
@@ -306,7 +349,7 @@ class Model_Image extends Model_Base_Db
     public function setLat($lat){$this->_lat = $lat; return $this;}
     public function setLon($lon){$this->_lon = $lon; return $this;}
     public function setDefaultImage($defaultImage){$this->_defaultImage = (bool)$defaultImage; return $this;}
-    public function setIsThumbnail($isThumbnail){$this->_isThumbnail = (bool)$isThumbnail; return $this;}
+    public function setThumbnail($thumbnail){$this->_thumbnail = $thumbnail; return $this;}
 
     //Getters
     public function getItemImageId(){return $this->_itemImageId;}
@@ -316,6 +359,6 @@ class Model_Image extends Model_Base_Db
     public function getLon(){return $this->_lon;}
     public function getInsertTs(){return $this->_insertTs;}
     public function getDefaultImage(){return (bool)$this->_defaultImage;}
-    public function getIsThumbnail(){return (bool)$this->_isThumbnail;}
+    public function getThumbnail(){return $this->_thumbnail;}
     public function getTotal(){return $this->_total;}
 }

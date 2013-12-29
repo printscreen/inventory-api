@@ -26,15 +26,15 @@ class Model_Images extends Model_Base_Db
               , ii.lon
               , ii.insert_ts
               , ii.default_image
-              , ii.is_thumbnail
+              , ii.thumbnail
               , ( SELECT
                     count(*)
                     FROM item_image ii
-                    WHERE is_thumbnail AND item_id = :itemId
+                    WHERE thumbnail IS NULL AND item_id = :itemId
                 ) AS total
             FROM item_image ii
             WHERE ii.item_id = :itemId
-            ". (!empty($thumbnailsOnly) ? 'AND is_thumbnail ' : '') ."
+            ". (!empty($thumbnailsOnly) ? 'AND thumbnail IS NULL ' : '') ."
             ORDER BY :sort " . $this->getDirection($sort) . "
             LIMIT :offset,:limit
         ";
