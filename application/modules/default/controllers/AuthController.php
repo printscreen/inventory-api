@@ -8,6 +8,7 @@ class AuthController extends Zend_Controller_Action
     	$success = false;
     	$message = '';
     	$token = '';
+        $user = array();
     	$errors = array();
         if ($form->isValid($this->getRequest()->getParams())) {
  			$auth = Zend_Auth::getInstance();
