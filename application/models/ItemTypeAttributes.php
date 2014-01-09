@@ -65,7 +65,7 @@ class Model_ItemTypeAttributes extends Model_Base_Db
 
     public function toArray()
     {
-        $users = array();
+        $itemTypeAttributes = array();
         if(is_array($this->_itemTypeAttributes) && count($this->_itemTypeAttributes) > 0) {
             foreach($this->_itemTypeAttributes as $itemTypeAttribute) {
                 $itemTypeAttributes[] = $itemTypeAttribute->toArray();
