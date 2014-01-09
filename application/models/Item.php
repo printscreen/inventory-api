@@ -60,10 +60,10 @@ class Model_Item extends Model_Base_Db
 
     public function load($userId = null)
     {
-        $where = 'WHERE true';
+        $where = '';
         $binds = array();
         if(!empty($this->_itemId) && is_numeric($this->_itemId)) {
-            $where .= ' AND i.item_id = :itemId';
+            $where .= 'WHERE true AND i.item_id = :itemId';
             $binds[':itemId'] = array('value' => $this->_itemId, 'type' => PDO::PARAM_INT);
         } else if (is_numeric($userId) && !empty($this->_name)) {
             $where = ' INNER JOIN user_unit uu ON i.user_unit_id = uu.user_unit_id ' .
@@ -93,7 +93,6 @@ class Model_Item extends Model_Base_Db
             LEFT JOIN item_image ii ON i.item_id = ii.item_id AND ii.default_image AND thumbnail IS NULL
              $where LIMIT 1
         ";
-
         $query = $this->_db->prepare($sql);
         $this->bind($query, $binds);
 
