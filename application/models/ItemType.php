@@ -146,7 +146,7 @@ class Model_ItemType extends Model_Base_Db
         $query->bindParam(':userId', $userId, PDO::PARAM_INT);
         $query->bindParam(':itemTypeId', $itemTypeId, PDO::PARAM_INT);
 
-        $query->execute($binds);
+        $query->execute();
         $result = $query->fetch();
         return (bool)$result->can_edit;
     }
