@@ -49,7 +49,10 @@ class Inventory_Controller_Plugin_Acl extends Zend_Controller_Plugin_Abstract
 		$dispatcher = Zend_Controller_Front::getInstance()->getDispatcher();
 		if ($dispatcher->isDispatchable($request)) {
 			$userAcl = new Model_Acl(
-			    array('userTypeId' => $token->getUserTypeId())
+			    array(
+			    	'userId' => $token->getUserId()
+			      ,	'userTypeId' => $token->getUserTypeId()
+			    )
 			);
 			$userAcl->initAcl();
 			$denied = true;

@@ -89,6 +89,9 @@ VALUES
 ,   ('default:image:add')
 ,   ('default:image:delete')
 ,   ('default:image:make-default')
+,   ('admin:module:view-location-module')
+,   ('admin:module:add-location-module')
+,   ('admin:module:delete-location-module')
 ;
 
 CREATE TABLE user_type_resource (
@@ -152,9 +155,11 @@ VALUES
     (46,1),(46,2),(46,3), -- default:image:view
     (47,1),(47,2),(47,3), -- default:image:add
     (48,1),(48,2),(48,3), -- default:image:delete
-    (49,1),(49,2),(49,3) -- default:image:make-default
+    (49,1),(49,2),(49,3), -- default:image:make-default
+    (50,1), -- admin:module:view-location-module
+    (51,1), -- admin:module:add-location-module
+    (52,1) -- admin:module:delete-location-module
 ;
-
 
 CREATE TABLE location (
     location_id         INT(10)         NOT NULL auto_increment,
@@ -166,6 +171,34 @@ CREATE TABLE location (
     phone_number        VARCHAR(255)    NULL,
     active              BOOLEAN         NOT NULL DEFAULT true,
     PRIMARY KEY (location_id)
+);
+
+CREATE TABLE module (
+    module_id       INT(10)         NOT NULL auto_increment,
+    name            VARCHAR(255)    NOT NULL,
+    PRIMARY KEY (module_id)
+);
+
+CREATE TABLE module_resource (
+    module_resource_id  INT(10)     NOT NULL auto_increment,
+    module_id           INT(10)     NOT NULL,
+    resource_id         INT(10)     NOT NULL,
+    user_type_id        INT(10)     NOT NULL,
+    PRIMARY KEY(module_resource_id),
+    FOREIGN KEY (module_id) REFERENCES module(module_id) ON DELETE CASCADE,
+    FOREIGN KEY (resource_id) REFERENCES resource(resource_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_type_id) REFERENCES user_type(user_type_id) ON DELETE CASCADE,
+    UNIQUE KEY user_type_id_resource_id_module_id (user_type_id, module_id, resource_id)
+);
+
+CREATE TABLE location_module (
+    location_module_id  INT(10)     NOT NULL auto_increment,
+    module_id           INT(10)     NOT NULL,
+    location_id         INT(10)     NOT NULL,
+    PRIMARY KEY (location_module_id),
+    FOREIGN KEY (module_id) REFERENCES module(module_id) ON DELETE CASCADE,
+    FOREIGN KEY (location_id) REFERENCES location(location_id) ON DELETE CASCADE,
+    UNIQUE KEY location_id_module_id (module_id, location_id)
 );
 
 CREATE TABLE user_location (

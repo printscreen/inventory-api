@@ -10,9 +10,9 @@ class Model_UserTypeResources extends Model_Base_Db
             'userTypeId' => null,
             'db' => null,
             ), $options);
-            
+
 	    parent::__construct($settings['db']);
-	    
+
 		$this->_userTypeId = $settings['userTypeId'];
 		$this->_userTypeResources = array();
 	}
@@ -31,11 +31,11 @@ class Model_UserTypeResources extends Model_Base_Db
 				WHERE utr.user_type_id = :userTypeId
 		';
 	    $query = $this->_db->prepare($sql);
-	    
+
 	    $userTypeId = $this->convertToInt($this->_userTypeId);
 	    $query->bindParam(':userTypeId', $userTypeId, PDO::PARAM_INT);
 		$query->execute();
-		
+
 		$result = $query->fetchAll();
 
 		$this->_userTypeResources = array();
