@@ -294,6 +294,45 @@ class Model_User extends Model_Base_Db
 	    return (bool)$result->can_edit;
 	}
 
+	public function getUserLocationModules()
+	{
+		$sql = '
+                SELECT DISTINCT
+                    lm.location_module_id
+                  , lm.module_id
+                  , m.name AS module_name
+                  , lm.location_id
+                  , l.name AS location_name
+                FROM
+                    location_module lm
+                INNER JOIN module m ON lm.module_id = m.module_id
+                INNER JOIN location l ON l.location_id = lm.location_id
+                WHERE (SELECT user_type_id FROM users WHERE user_id = :userId) = 1
+                OR
+                lm.location_id IN (
+                	SELECT location_id FROM user_location WHERE user_id = :userId
+                )
+
+        ';
+        $query = $this->_db->prepare($sql);
+
+        $userId = $this->convertToInt($this->_userId);
+        $query->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $query->execute();
+
+        $result = $query->fetchAll();
+
+        $this->_locationModules = array();
+        if(!empty($result)) {
+            foreach($result as $key => $value) {
+                $locationModule = new Model_LocationModule();
+                $locationModule->loadRecord($value);
+                $this->_locationModules[] = $locationModule->toArray();
+            }
+        }
+        return $this->_locationModules;
+	}
+
 	//Setters
 	public function setUserId($userId){$this->_userId = $userId; return $this;}
 	public function setFirstName($firstName){$this->_firstName = $firstName; return $this;}

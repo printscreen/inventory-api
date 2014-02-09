@@ -21,4 +21,16 @@ class ProfileController extends Inventory_Controller_Action
             'errors' => $form->getFormErrors()
         ));
     }
+
+    public function moduleAction()
+    {
+        $user = new Model_User(array(
+            'userId' => $this->getRequesterUserId()
+        ));
+
+        $this->_helper->json(array(
+            'success' => true,
+            'modules' => $user->getUserLocationModules()
+        ));
+    }
 }

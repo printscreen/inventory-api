@@ -92,6 +92,7 @@ VALUES
 ,   ('admin:module:view-location-module')
 ,   ('admin:module:add-location-module')
 ,   ('admin:module:delete-location-module')
+,   ('default:profile:module')
 ;
 
 CREATE TABLE user_type_resource (
@@ -158,7 +159,8 @@ VALUES
     (49,1),(49,2),(49,3), -- default:image:make-default
     (50,1), -- admin:module:view-location-module
     (51,1), -- admin:module:add-location-module
-    (52,1) -- admin:module:delete-location-module
+    (52,1), -- admin:module:delete-location-module
+    (53,1),(53,2),(53,3) -- default:profile:module
 ;
 
 CREATE TABLE location (
