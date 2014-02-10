@@ -234,7 +234,7 @@ class Model_User extends Model_Base_Db
 	    $userId = $this->convertToInt($this->_userId);
 	    $query = $this->_db->prepare($sql);
 	    $query->bindParam(':userId', $userId, PDO::PARAM_INT);
-	    $query->execute($binds);
+	    $query->execute();
 		$result = $query->fetchAll();
 		return current($result)->password == self::hashPassword(self::getTemporaryPassword());
 	}

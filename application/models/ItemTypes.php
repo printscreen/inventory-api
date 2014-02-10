@@ -143,7 +143,7 @@ class Model_ItemTypes extends Model_Base_Db
 
     public function toArray()
     {
-        $users = array();
+        $itemTypes = array();
         if(is_array($this->_itemTypes) && count($this->_itemTypes) > 0) {
             foreach($this->_itemTypes as $itemType) {
                 $itemTypes[] = $itemType->toArray();

@@ -6,6 +6,7 @@ class AuthController extends Zend_Controller_Action
     {
         $form = new Form_Login();
     	$success = false;
+        $hasTemporaryPassword = false;
     	$message = '';
     	$token = '';
         $user = array();
@@ -23,8 +24,8 @@ class AuthController extends Zend_Controller_Action
                 $getUser = new Model_User();
             	$getUser->setEmail($form->getElement('email')->getValue());
             	$getUser->load();
+                $hasTemporaryPassword = $getUser->hasTemporaryPassword();
                 $user = $getUser->toArray();
-
             	$getToken = new Model_Token(array(
             	    'userId' => $getUser->getUserId()
             	));
@@ -37,6 +38,7 @@ class AuthController extends Zend_Controller_Action
         	'success' => $success,
             'token' => $token,
             'user' => $user,
+            'hasTemporaryPassword' => $hasTemporaryPassword,
             'message' => $message,
             'errors' => $form->getFormErrors()
         ));
