@@ -296,8 +296,7 @@ class Model_User extends Model_Base_Db
 
 	public function getUserLocationModules()
 	{
-		$sql = '
-                SELECT DISTINCT
+		$sql = 'SELECT DISTINCT
                     lm.location_module_id
                   , lm.module_id
                   , m.name AS module_name
@@ -307,13 +306,17 @@ class Model_User extends Model_Base_Db
                     location_module lm
                 INNER JOIN module m ON lm.module_id = m.module_id
                 INNER JOIN location l ON l.location_id = lm.location_id
+                INNER JOIN module_resource mr ON mr.module_id = lm.module_id
                 WHERE (SELECT user_type_id FROM users WHERE user_id = :userId) = 1
-                OR
-                lm.location_id IN (
-                	SELECT location_id FROM user_location WHERE user_id = :userId
-                )
-
+                OR (
+                	lm.location_id IN (
+                		SELECT location_id FROM user_location WHERE user_id = :userId
+                	)
+					AND
+					mr.user_type_id = (SELECT user_type_id FROM users WHERE user_id = :userId)
+				)
         ';
+
         $query = $this->_db->prepare($sql);
 
         $userId = $this->convertToInt($this->_userId);

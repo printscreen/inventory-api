@@ -148,7 +148,7 @@ class Admin_UserController extends Inventory_Controller_Action
             $getUserLocations = new Model_UserLocations(array(
             	'userId' => $form->getElement('userId')->getValue()
             ));
-            if(filter_var($this->getRequest()->getParam('available'),FILTER_VALIDATE_BOOLEAN)) {
+            if(filter_var($this->getRequest()->getParam('available'), FILTER_VALIDATE_BOOLEAN)) {
                 $getUserLocations->getAvailableUserLocations();
             } else {
                 $getUserLocations->getUserLocations();
