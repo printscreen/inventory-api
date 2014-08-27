@@ -45,7 +45,7 @@ class Model_Auth extends Model_Base_Db implements Zend_Auth_Adapter_Interface
     {
         $query = $this->_db->prepare("SELECT EXISTS (SELECT true FROM users WHERE email = :email AND password = :password) AS auth ");
         $query->execute(array(
-              ':email'=>mysql_real_escape_string($this->_email)
+              ':email'=>$this->_email
             , ':password'=>Model_User::hashPassword($this->_password)
         ));
         $result = $query->fetchAll();
